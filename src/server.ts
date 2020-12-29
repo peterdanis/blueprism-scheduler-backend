@@ -69,6 +69,7 @@ if (
   log(
     "Error: Scheduler database connection settings are not set. Please set them in .env file",
   );
+  process.exit(1);
 }
 
 // Create HTTP or HTTPS server.
