@@ -1,13 +1,13 @@
-import * as app from "./app";
-import * as fs from "fs";
-import * as http from "http";
-import * as https from "https";
 import { name as appName, version } from "../package.json";
 import { AddressInfo } from "net";
-import { config } from "dotenv";
+import app from "./app";
 import Debug from "debug";
+import dotenv from "dotenv";
+import fs from "fs";
+import http from "http";
+import https from "https";
 
-config();
+dotenv.config();
 const debug = Debug(`express:${appName}`);
 const {
   BP_API_AUTH,
