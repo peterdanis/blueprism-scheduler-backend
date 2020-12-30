@@ -1,12 +1,12 @@
 import { name as appName, version } from "../package.json";
 import { AddressInfo } from "net";
-import app from "./app";
+import app from "./expressApp";
 import Debug from "debug";
 import dotenv from "dotenv";
 import fs from "fs";
 import http from "http";
 import https from "https";
-import scheduler from "./scheduler";
+import scheduler from "./schedulerApp";
 
 dotenv.config();
 const debug = Debug(`express:${appName}`);
@@ -108,14 +108,14 @@ if (BP_SCHED_HTTPS === "true") {
 server.on("error", (error) => {
   log(error);
 });
-server.on("listening", () => {
+server.on("listening", async () => {
   const addr = server.address() as AddressInfo;
   log(
     `Listening on ${addr.family} address ${BP_SCHED_IP}, port ${
       addr.port
     }, using ${BP_SCHED_HTTPS ? "HTTPS" : "HTTP"}`,
   );
-  scheduler(
+  await scheduler(
     BP_SCHED_DBNAME as string,
     BP_SCHED_DBUSERNAME as string,
     BP_SCHED_DBPASSWORD as string,
