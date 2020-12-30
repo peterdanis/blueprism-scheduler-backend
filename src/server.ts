@@ -115,12 +115,13 @@ server.on("listening", async () => {
       addr.port
     }, using ${BP_SCHED_HTTPS ? "HTTPS" : "HTTP"}`,
   );
+
   await scheduler(
-    BP_SCHED_DBNAME as string,
-    BP_SCHED_DBUSERNAME as string,
-    BP_SCHED_DBPASSWORD as string,
-    BP_SCHED_DBHOST as string,
-    parseInt(BP_SCHED_DBPORT as string, 10),
+    BP_SCHED_DBNAME,
+    BP_SCHED_DBUSERNAME,
+    BP_SCHED_DBPASSWORD,
+    BP_SCHED_DBHOST,
+    parseInt(BP_SCHED_DBPORT, 10),
   );
 });
 
