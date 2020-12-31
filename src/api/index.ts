@@ -3,6 +3,10 @@ import express from "express";
 // const setupAuth = require("./utils/auth");
 // const setupLog = require("./utils/logging");
 
+interface CustomError extends Error {
+  statusCode: number;
+}
+
 const app = express();
 
 // Setup logging and rate limiter
@@ -36,7 +40,7 @@ app.use("*", (req, res, next) => {
 
 app.use(
   (
-    error: customError,
+    error: CustomError,
     req: express.Request,
     res: express.Response,
     next: express.NextFunction, // eslint-disable-line @typescript-eslint/no-unused-vars
