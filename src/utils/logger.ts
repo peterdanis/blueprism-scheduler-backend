@@ -1,3 +1,3 @@
-export default (msg: string): void => {
+export default (msg: string | Error): void => {
   console.log(msg);
 };

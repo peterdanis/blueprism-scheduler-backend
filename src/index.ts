@@ -1,13 +1,10 @@
-import { version } from "../package.json";
+import { apiAuth, apiIP, apiPort, useHTTPS } from "./utils/getEnvVariables";
 import { AddressInfo } from "net";
 import app from "./api";
-import log from "./utils/logger";
-import { apiAuth } from "./utils/getEnvVariables";
 import createServer from "./utils/createServer";
-
+import log from "./utils/logger";
 import scheduler from "./scheduler";
-
-// const { apiAuth} = env;
+import { version } from "../package.json";
 
 // Print out some info
 log(" ");
@@ -18,7 +15,7 @@ log(
   "Note: configuration can be done via .env file in this directory and/or via env variables",
 );
 
-// Create HTTP or HTTPS server.
+// Create HTTP or HTTPS server, based on env. variable
 const server = createServer(app);
 server.on("error", (error) => {
   log(error);
@@ -26,20 +23,14 @@ server.on("error", (error) => {
 server.on("listening", async () => {
   const addr = server.address() as AddressInfo;
   log(
-    `Listening on ${addr.family} address ${BP_SCHED_IP}, port ${
-      addr.port
-    }, using ${BP_SCHED_HTTPS ? "HTTPS" : "HTTP"}`,
+    `Listening on ${addr.family} address ${apiIP}, port ${addr.port}, using ${
+      useHTTPS ? "HTTPS" : "HTTP"
+    }`,
   );
 
-  await scheduler(
-    BP_SCHED_DBNAME,
-    BP_SCHED_DBUSERNAME,
-    BP_SCHED_DBPASSWORD,
-    BP_SCHED_DBHOST,
-    parseInt(BP_SCHED_DBPORT, 10),
-  );
+  scheduler();
 });
 
-server.listen(BP_SCHED_PORT);
+server.listen(apiPort);
 
 module.exports = server;
