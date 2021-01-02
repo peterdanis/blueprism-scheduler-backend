@@ -1,6 +1,5 @@
 import { Column, Entity } from "typeorm";
 import Base from "./Base";
-import { RecurrenceRule } from "node-schedule";
 
 @Entity()
 export default class Schedule extends Base {
@@ -8,5 +7,5 @@ export default class Schedule extends Base {
   name!: string;
 
   @Column()
-  schedule!: RecurrenceRule;
+  schedule!: string;
 }

@@ -3,9 +3,9 @@ import Base from "./Base";
 
 @Entity()
 export default class User extends Base {
-  @Column()
+  @Column({ unique: true })
   name!: string;
 
-  @Column()
+  @Column({ default: true })
   readonly!: boolean;
 }

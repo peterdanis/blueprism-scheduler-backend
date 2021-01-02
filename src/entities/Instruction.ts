@@ -10,7 +10,7 @@ interface Input {
 @Entity()
 export default class Instruction extends Base {
   @Column()
-  inputs!: Input[];
+  inputs!: string;
 
   @Column({ unique: true })
   name!: string;
