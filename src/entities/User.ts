@@ -4,5 +4,8 @@ import Base from "./Base";
 @Entity()
 export default class User extends Base {
   @Column()
-  name: string;
+  name!: string;
+
+  @Column()
+  readonly!: boolean;
 }
