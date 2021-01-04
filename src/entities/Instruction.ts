@@ -1,5 +1,6 @@
-import { Column, Entity } from "typeorm";
+import { Column, Entity, OneToMany } from "typeorm";
 import Base from "./Base";
+import ScheduleInstruction from "./ScheduleInstruction";
 
 interface Input {
   "@name": string;
@@ -18,6 +19,15 @@ export default class Instruction extends Base {
   @Column()
   process!: string;
 
-  @Column()
-  timeout!: number;
+  @Column({ default: 86400000 })
+  softTimeout!: number;
+
+  @Column({ default: 86400000 })
+  hardTimeout!: number;
+
+  @OneToMany(
+    () => ScheduleInstruction,
+    (scheduleInstruction) => scheduleInstruction.instruction,
+  )
+  scheduleInstruction!: ScheduleInstruction[];
 }

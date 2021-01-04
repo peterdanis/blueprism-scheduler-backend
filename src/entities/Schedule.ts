@@ -1,9 +1,11 @@
-import { Column, Entity } from "typeorm";
+import { Column, Entity, ManyToOne, OneToMany } from "typeorm";
 import Base from "./Base";
+import RuntimeResource from "./RuntimeResource";
+import ScheduleInstruction from "./ScheduleInstruction";
 
 @Entity()
 export default class Schedule extends Base {
-  @Column()
+  @Column({ unique: true })
   name!: string;
 
   @Column()
@@ -14,4 +16,19 @@ export default class Schedule extends Base {
 
   @Column({ default: new Date(253402214400000).toISOString() })
   validUntil!: Date;
+
+  @OneToMany(
+    () => ScheduleInstruction,
+    (scheduleInstruction) => scheduleInstruction.schedule,
+  )
+  scheduleInstruction!: ScheduleInstruction[];
+
+  @ManyToOne(
+    () => RuntimeResource,
+    (runtimeResource) => runtimeResource.schedule,
+    {
+      nullable: false,
+    },
+  )
+  runtimeResource!: RuntimeResource;
 }
