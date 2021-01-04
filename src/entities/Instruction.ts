@@ -9,8 +9,8 @@ interface Input {
 
 @Entity()
 export default class Instruction extends Base {
-  @Column()
-  inputs!: string;
+  @Column("simple-json")
+  inputs!: Input[];
 
   @Column({ unique: true })
   name!: string;

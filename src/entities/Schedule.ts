@@ -8,4 +8,10 @@ export default class Schedule extends Base {
 
   @Column()
   schedule!: string;
+
+  @Column()
+  validFrom!: Date;
+
+  @Column({ default: new Date(253402214400000).toISOString() })
+  validUntil!: Date;
 }

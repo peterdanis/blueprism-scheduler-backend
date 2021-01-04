@@ -2,7 +2,7 @@ import Job from "./entities/Job";
 
 let running = false;
 
-export default async (): void => {
+export default async (): Promise<void> => {
   if (running) {
     return;
   }
