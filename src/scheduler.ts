@@ -56,63 +56,70 @@ export const init = async (): Promise<void> => {
     // }
 
     try {
-      const user = User.create({
-        name: "Dummy",
-      });
-      await user.save();
-      const vm1 = RuntimeResource.create({
-        friendlyName: "vm1",
-        hostname: "vm1.something.com",
-      });
-      await vm1.save();
-      const vm2 = RuntimeResource.create({
-        friendlyName: "vm2",
-        hostname: "vm2.something.com",
-      });
-      await vm2.save();
-      const instruction1 = Instruction.create({
-        hardTimeout: 100000,
-        inputs: [
-          {
-            "@name": "input name",
-            "@type": "text",
-            "@value": "my input",
-          },
-        ],
-        name: "Login",
-        process: "Login",
-        softTimeout: 100000,
-      });
-      await instruction1.save();
-      const instruction2 = Instruction.create({
-        hardTimeout: 100000,
-        inputs: [
-          {
-            "@name": "input name",
-            "@type": "text",
-            "@value": "my input",
-          },
-        ],
-        name: "Some process",
-        process: "Some process",
-        softTimeout: 100000,
-      });
-      await instruction2.save();
-      const schedule1 = Schedule.create({
-        name: "Test schedule 1",
-        runtimeResource: vm1,
-        schedule: "10 * * * *",
-        validFrom: new Date().toISOString(),
-      });
-      await schedule1.save();
-      const schedule2 = Schedule.create({
-        name: "Test schedule 2",
-        runtimeResource: vm2,
-        schedule: "10 * * * *",
-        validFrom: new Date().toISOString(),
-      });
-      await schedule2.save();
+      // const user = User.create({
+      //   name: "Dummy",
+      // });
+      //
+      // await user.save();
+      // const vm1 = RuntimeResource.create({
+      //   friendlyName: "vm1",
+      //   hostname: "vm1.something.com",
+      // });
+      // await vm1.save();
+      //
+      // const vm2 = RuntimeResource.create({
+      //   friendlyName: "vm2",
+      //   hostname: "vm2.something.com",
+      // });
+      // await vm2.save();
+      //
+      // const instruction1 = Instruction.create({
+      //   hardTimeout: 100000,
+      //   // inputs: [
+      //   //   {
+      //   //     "@name": "input name",
+      //   //     "@type": "text",
+      //   //     "@value": "my input",
+      //   //   },
+      //   // ],
+      //   name: "Login 2",
+      //   process: "Login",
+      //   softTimeout: 100000,
+      // });
+      // await instruction1.save();
+      //
+      // const instruction2 = Instruction.create({
+      //   hardTimeout: 100000,
+      //   inputs: [
+      //     {
+      //       "@name": "input name",
+      //       "@type": "text",
+      //       "@value": "my input",
+      //     },
+      //   ],
+      //   name: "Some process",
+      //   process: "Some process",
+      //   softTimeout: 100000,
+      // });
+      // await instruction2.save();
+      //
+      // const schedule1 = Schedule.create({
+      //   name: "Test schedule 1",
+      //   runtimeResource: vm1,
+      //   schedule: "10 * * * *",
+      //   validFrom: new Date().toISOString(),
+      // });
+      // await schedule1.save();
+      //
+      // const schedule2 = Schedule.create({
+      //   name: "Test schedule 2",
+      //   runtimeResource: vm2,
+      //   schedule: "10 * * * *",
+      //   validFrom: new Date().toISOString(),
+      // });
+      // await schedule2.save();
 
+      //
       log("Dummies executed");
     } catch (error) {
       //
