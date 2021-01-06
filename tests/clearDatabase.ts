@@ -8,6 +8,7 @@ import {
 } from "../src/utils/getEnvVariables";
 import { createConnection } from "typeorm";
 import log from "../src/utils/logger";
+import retry from "async-retry";
 
 export default (async () => {
   let connection;
@@ -15,7 +16,7 @@ export default (async () => {
     connection = await createConnection({
       database: dbName,
       host: dbHost,
-      logging: ["error", "warn"],
+      logging: false,
       password: dbPassword,
       port: dbPort,
       type: "mssql",
@@ -33,12 +34,25 @@ export default (async () => {
       "runtime_resource",
       "job",
     ];
-    for (const table of tables) {
-      const t = await queryRunner.getTable(table);
-      if (t) {
-        await queryRunner.dropTable(table);
-      }
-    }
+
+    await Promise.all(
+      tables.map(async (table) => {
+        await retry(
+          async () => {
+            await queryRunner.dropTable(table);
+          },
+          {
+            factor: 1,
+            onRetry: () => {
+              log(`retrying to delete table ${table}`);
+            },
+            retries: 3,
+          },
+        ).catch(() => {
+          // do nothing
+        });
+      }),
+    );
 
     log("DB cleared");
   } catch (error) {
