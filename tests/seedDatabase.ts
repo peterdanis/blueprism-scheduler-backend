@@ -38,9 +38,11 @@ export default (async () => {
     });
     log(`Connected to: ${dbHost}, database: ${dbName}`);
 
-    const user1 = new User("Dummy1", false);
+    const user1 = User.create({ admin: true, name: "Dummy1" });
     await user1.save();
-    const user2 = new User(`Dummy${Math.floor(Math.random() * 1000000)}`);
+    const user2 = User.create({
+      name: `Dummy${Math.floor(Math.random() * 1000000)}`,
+    });
     await user2.save();
     const users1 = await User.find();
     log(users1);
@@ -48,7 +50,6 @@ export default (async () => {
     deletedUser?.remove();
     const users2 = await User.find();
     log(users2);
-    await users2[999]?.remove();
 
     const vm1 = RuntimeResource.create({
       friendlyName: "vm1",

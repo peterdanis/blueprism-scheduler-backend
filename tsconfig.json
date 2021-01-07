@@ -11,6 +11,7 @@
     "jsx": "preserve",
     "module": "commonjs",
     "moduleResolution": "node",
+    "noUncheckedIndexedAccess": true,
     "outDir": "./build",
     "resolveJsonModule": true,
     "rootDir": ".",
