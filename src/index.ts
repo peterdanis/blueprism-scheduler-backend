@@ -1,4 +1,4 @@
-import { apiAuth, apiIP, apiPort, useHTTPS } from "./utils/getEnvVariables";
+import { apiAuth, apiIP, apiPort, useHTTPS } from "./utils/getEnvVariable";
 import { AddressInfo } from "net";
 import app from "./api";
 import createServer from "./utils/createServer";

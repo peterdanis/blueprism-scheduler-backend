@@ -5,15 +5,15 @@ import {
   dbPassword,
   dbPort,
   dbUsername,
-} from "../src/utils/getEnvVariables";
+} from "../src/utils/getEnvVariable";
 import { createConnection } from "typeorm";
-import Instruction from "../src/entities/Instruction";
-import Job from "../src/entities/Job";
+import Instruction from "../src/entity/Instruction";
+import Job from "../src/entity/Job";
 import log from "../src/utils/logger";
-import RuntimeResource from "../src/entities/RuntimeResource";
-import Schedule from "../src/entities/Schedule";
-import ScheduleInstruction from "../src/entities/ScheduleInstruction";
-import User from "../src/entities/User";
+import RuntimeResource from "../src/entity/RuntimeResource";
+import Schedule from "../src/entity/Schedule";
+import ScheduleInstruction from "../src/entity/ScheduleInstruction";
+import User from "../src/entity/User";
 
 export default (async () => {
   let connection;

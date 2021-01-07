@@ -7,7 +7,7 @@ import {
   dbPassword,
   dbPort,
   dbUsername,
-} from "./getEnvVariables";
+} from "./getEnvVariable";
 import log from "./logger";
 
 export default (): void => {

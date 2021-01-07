@@ -1,4 +1,4 @@
-import { certFile, certPassword, useHTTPS } from "./getEnvVariables";
+import { certFile, certPassword, useHTTPS } from "./getEnvVariable";
 import { Application } from "express";
 import fs from "fs";
 import http from "http";

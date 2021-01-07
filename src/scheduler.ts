@@ -5,15 +5,15 @@ import {
   dbPassword,
   dbPort,
   dbUsername,
-} from "./utils/getEnvVariables";
+} from "./utils/getEnvVariable";
 import { createConnection } from "typeorm";
-import Instruction from "./entities/Instruction";
-import Job from "./entities/Job";
+import Instruction from "./entity/Instruction";
+import Job from "./entity/Job";
 import log from "./utils/logger";
-import RuntimeResource from "./entities/RuntimeResource";
-import Schedule from "./entities/Schedule";
-import ScheduleInstruction from "./entities/ScheduleInstruction";
-import User from "./entities/User";
+import RuntimeResource from "./entity/RuntimeResource";
+import Schedule from "./entity/Schedule";
+import ScheduleInstruction from "./entity/ScheduleInstruction";
+import User from "./entity/User";
 
 export const init = async (): Promise<void> => {
   try {
@@ -28,7 +28,7 @@ export const init = async (): Promise<void> => {
         ScheduleInstruction,
       ],
       host: dbHost,
-      logging: ["error", "warn"],
+      logging: "all", //["error", "warn"],
       password: dbPassword,
       port: dbPort,
       synchronize: true,

@@ -5,7 +5,7 @@ import {
   dbPassword,
   dbPort,
   dbUsername,
-} from "../src/utils/getEnvVariables";
+} from "../src/utils/getEnvVariable";
 import { createConnection } from "typeorm";
 import log from "../src/utils/logger";
 import retry from "async-retry";
