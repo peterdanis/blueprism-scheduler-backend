@@ -1,5 +1,6 @@
 import { Column, Entity, ManyToOne, OneToMany } from "typeorm";
 import Base from "./Base";
+import { defaultPriority } from "../utils/getSetting";
 import RuntimeResource from "./RuntimeResource";
 import ScheduleInstruction from "./ScheduleInstruction";
 
@@ -11,11 +12,8 @@ export default class Schedule extends Base {
   @Column()
   schedule!: string;
 
-  @Column()
-  validFrom!: Date;
-
-  @Column({ default: new Date(253402214400000).toISOString() })
-  validUntil!: Date;
+  @Column({ default: defaultPriority })
+  priority!: number;
 
   @OneToMany(
     () => ScheduleInstruction,
@@ -31,4 +29,10 @@ export default class Schedule extends Base {
     },
   )
   runtimeResource!: RuntimeResource;
+
+  @Column()
+  validFrom!: Date;
+
+  @Column({ default: new Date(253402214400000).toISOString() }) // Equals to 31st of December 9999
+  validUntil!: Date;
 }

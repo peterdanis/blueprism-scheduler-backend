@@ -13,21 +13,21 @@ export default class Instruction extends Base {
   @Column({ nullable: true, type: "simple-json" })
   inputs!: Input[];
 
+  @Column({ default: 86400000 }) // The default 86400000ms equals to 1d
+  hardTimeout!: number;
+
   @Column({ unique: true })
   name!: string;
 
   @Column()
   process!: string;
 
-  @Column({ default: 86400000 })
-  softTimeout!: number;
-
-  @Column({ default: 86400000 })
-  hardTimeout!: number;
-
   @OneToMany(
     () => ScheduleInstruction,
     (scheduleInstruction) => scheduleInstruction.instruction,
   )
   scheduleInstruction!: ScheduleInstruction[];
+
+  @Column({ default: 86400000 }) // The default 86400000ms equals to 1d
+  softTimeout!: number;
 }
