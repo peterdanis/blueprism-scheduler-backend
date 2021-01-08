@@ -10,7 +10,7 @@ import { createConnection } from "typeorm";
 import log from "../src/utils/logger";
 import retry from "async-retry";
 
-export default (async () => {
+export default async (): Promise<void> => {
   let connection;
   try {
     connection = await createConnection({
@@ -39,10 +39,16 @@ export default (async () => {
       tables.map(async (table) => {
         await retry(
           async () => {
-            await queryRunner.dropTable(table);
+            try {
+              await queryRunner.dropTable(table);
+            } catch (error) {
+              if (!error.message.match(/Table .* does not exist/)) {
+                throw error;
+              }
+            }
           },
           {
-            factor: 1,
+            factor: 1.5,
             onRetry: () => {
               log(`retrying to delete table ${table}`);
             },
@@ -58,6 +64,6 @@ export default (async () => {
   } catch (error) {
     log(error);
   } finally {
-    connection?.close();
+    await connection?.close();
   }
-})();
+};

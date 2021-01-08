@@ -11,6 +11,7 @@
     "debug": "set DEBUG=* & npm start",
     "lint": "eslint ./src/**/*.{ts,tsx}",
     "lint-fix": "eslint --fix ./src/**/*.{ts,tsx} ./tests/**/*.{ts,tsx}",
+    "seedDB": "ts-node ./tests/seedDatabase.ts",
     "start": "nodemon --watch .env --watch src ./src/index.ts",
     "test": "jest",
     "test-cover": "jest --coverage --noStackTrace",

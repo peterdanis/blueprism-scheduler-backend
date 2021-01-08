@@ -6,6 +6,7 @@ import {
   dbPort,
   dbUsername,
 } from "../src/utils/getEnvVariable";
+import clearDatabase from "./clearDatabase";
 import { createConnection } from "typeorm";
 import Instruction from "../src/entity/Instruction";
 import Job from "../src/entity/Job";
@@ -16,6 +17,7 @@ import ScheduleInstruction from "../src/entity/ScheduleInstruction";
 import User from "../src/entity/User";
 
 export default (async () => {
+  await clearDatabase();
   let connection;
   try {
     connection = await createConnection({
@@ -88,24 +90,48 @@ export default (async () => {
 
     const schedule1 = Schedule.create({
       name: "Test schedule 1",
+      rule: "* * * * *",
       runtimeResource: vm1,
-      schedule: "10 * * * *",
       validFrom: new Date().toISOString(),
     });
     await schedule1.save();
 
     const schedule2 = Schedule.create({
       name: "Test schedule 2",
+      rule: "*/5 * * * *",
       runtimeResource: vm2,
-      schedule: "10 * * * *",
       validFrom: new Date().toISOString(),
     });
     await schedule2.save();
+
+    const scheduleInstruction1 = ScheduleInstruction.create({
+      delayAfter: 1000,
+      instruction: instruction1,
+      schedule: schedule1,
+      step: 1,
+    });
+    await scheduleInstruction1.save();
+
+    const scheduleInstruction2 = ScheduleInstruction.create({
+      delayAfter: 1000,
+      instruction: instruction2,
+      schedule: schedule1,
+      step: 2,
+    });
+    await scheduleInstruction2.save();
+
+    const scheduleInstruction3 = ScheduleInstruction.create({
+      delayAfter: 1000,
+      instruction: instruction1,
+      schedule: schedule2,
+      step: 1,
+    });
+    await scheduleInstruction3.save();
 
     log("Dummies executed");
   } catch (error) {
     log(error);
   } finally {
-    connection?.close();
+    await connection?.close();
   }
 })();
