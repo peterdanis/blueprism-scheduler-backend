@@ -44,11 +44,12 @@ export const init = async (): Promise<void> => {
         id.toString(),
         rule,
         async (): Promise<Job> => {
+          log(`Adding job with id ${id} and rule ${rule} to jobs`);
           const job = Job.create({
             priority,
             runtimeResource,
             schedule,
-            startTime: Date.now(),
+            startTime: new Date(),
             status: "waiting",
           });
           return job.save();

@@ -1,4 +1,4 @@
-import { Column, Entity, ManyToOne, OneToMany } from "typeorm";
+import { Column, Entity, JoinColumn, ManyToOne, OneToMany } from "typeorm";
 import Base from "./Base";
 import { defaultPriority } from "../utils/getSetting";
 import Job from "./Job";
@@ -35,6 +35,7 @@ export default class Schedule extends Base {
     () => RuntimeResource,
     (runtimeResource) => runtimeResource.schedule,
     {
+      eager: true,
       nullable: false,
     },
   )
