@@ -4,11 +4,9 @@ let checking = false;
 let jobs: Job[] = [];
 
 const updateJobs = async (): Promise<Job[]> => {
-  jobs = await Job.find();
+  jobs = await Job.find({ order: { priority: "ASC" } });
   return jobs;
 };
-
-// export const getJobs;
 
 export const startIfAvailable = async (): Promise<void> => {
   if (checking) {
@@ -16,7 +14,7 @@ export const startIfAvailable = async (): Promise<void> => {
   }
   try {
     checking = true;
-    const a = await updateJobs();
+    await updateJobs();
   } catch (error) {
     //
   } finally {
@@ -28,7 +26,7 @@ const isResourceFree = () => {};
 
 const run = () => {};
 
-const addJob = () => {};
+export const addJob = () => {};
 
 const removeJob = () => {};
 

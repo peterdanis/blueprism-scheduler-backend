@@ -6,6 +6,9 @@ import Schedule from "./Schedule";
 @Entity()
 @Unique("step_scheduleId", ["step", "schedule"])
 export default class ScheduleInstruction extends Base {
+  @Column({ default: 0 })
+  delayAfter!: number;
+
   @Column()
   step!: number;
 

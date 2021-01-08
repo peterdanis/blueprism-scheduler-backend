@@ -13,6 +13,7 @@ import log from "./utils/logger";
 import RuntimeResource from "./entity/RuntimeResource";
 import Schedule from "./entity/Schedule";
 import ScheduleInstruction from "./entity/ScheduleInstruction";
+import { scheduleJob } from "node-schedule";
 import User from "./entity/User";
 
 export const init = async (): Promise<void> => {
@@ -28,14 +29,32 @@ export const init = async (): Promise<void> => {
         ScheduleInstruction,
       ],
       host: dbHost,
-      logging: "all", //["error", "warn"],
+      logging: ["error", "warn"],
       password: dbPassword,
       port: dbPort,
-      synchronize: true,
       type: "mssql",
       username: dbUsername,
     });
     log(`Connected to: ${dbHost}, database: ${dbName}`);
+
+    const schedules = await Schedule.find();
+    schedules.forEach((schedule) => {
+      const { id, rule, priority, runtimeResource } = schedule;
+      scheduleJob(
+        id.toString(),
+        rule,
+        async (): Promise<Job> => {
+          const job = Job.create({
+            priority,
+            runtimeResource,
+            schedule,
+            startTime: Date.now(),
+            status: "waiting",
+          });
+          return job.save();
+        },
+      );
+    });
   } catch (error) {
     log(error);
   }
