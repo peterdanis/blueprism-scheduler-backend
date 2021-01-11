@@ -2,8 +2,10 @@ import Job from "../entity/Job";
 import log from "../utils/logger";
 import Schedule from "../entity/Schedule";
 import ScheduleTask from "../entity/ScheduleTask";
+import { v4 as uuid } from "uuid";
 
 let checking = false;
+let firstRun = true;
 const runningJobs: Job[] = [];
 
 /**
@@ -43,64 +45,8 @@ const isResourceFree = (id: number, jobs: Job[]): boolean => {
   );
 };
 
-const run = async (job: Job): Promise<void> => {
-  const {
-    sessionId,
-    step,
-    subStep,
-    runtimeResource: { id },
-    schedule: { scheduleTask },
-  } = job;
-  // Step is indexed from 1, need to substract 1 to get the correct array index
-  if (scheduleTask.length === 0) {
-    return;
-  }
-  const stepDetails = scheduleTask.sort(
-    (first, second) => first.step - second.step,
-  )[step - 1];
-  const {
-    delayAfter,
-    task: { process, inputs, softTimeout, hardTimeout, name },
-  } = stepDetails as ScheduleTask;
-  log(`Send request to resource ${id}`);
-  throw new Error("test");
-};
-
-export const getJobs = async (): Promise<Job[]> => {
-  return Job.find();
-};
-
-export const startIfAvailable = async (): Promise<void> => {
-  log(`checking: ${checking}`);
-  if (checking) {
-    // Return immediately if the function is already running. This is to prevent accidentally starting multiple jobs on one resource.
-    return;
-  }
-  try {
-    checking = true;
-    const jobs = await getJobs();
-    if (jobs.length === 0) {
-      return;
-    }
-    const uniqueResources = getResourcesFromJobs(jobs);
-    uniqueResources.forEach((id) => {
-      if (isResourceFree(id, jobs)) {
-        const filteredJobs = filterByResource(id, jobs);
-        // As the jobs array is filtered by runtimeResourceId and it is free, its clear that there must be at least one item left in the array suitable for running.
-        // Do not await the result
-        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-        run(orderByPriority(filteredJobs)[0]!);
-      }
-    });
-  } catch (error) {
-    //
-  } finally {
-    checking = false;
-  }
-};
-
 /**
- * Adds job to queue and return the reference to it.
+ * Adds job to queue and returns the reference to it.
  */
 export const addJob = async (schedule: Schedule): Promise<Job> => {
   const { id, rule, priority, runtimeResource } = schedule;
@@ -112,9 +58,87 @@ export const addJob = async (schedule: Schedule): Promise<Job> => {
     runtimeResource,
     schedule,
     status: "waiting",
-    updateTime: new Date().toISOString(),
   });
   return job.save();
+};
+
+const run = async (job: Job): Promise<void> => {
+  try {
+    const {
+      sessionId,
+      step,
+      subStep,
+      runtimeResource: { id },
+      schedule: { scheduleTask },
+    } = job;
+    // Step is indexed from 1, need to substract 1 to get the correct array index
+    if (scheduleTask.length === 0) {
+      return;
+    }
+    const stepDetails = scheduleTask.sort(
+      (first, second) => first.step - second.step,
+    )[step - 1];
+    const {
+      delayAfter,
+      task: { process, inputs, softTimeout, hardTimeout, name },
+    } = stepDetails as ScheduleTask;
+    log(`Send request to resource ${id}`);
+    throw new Error("test");
+  } catch (error) {
+    log(error);
+    job.message = error.message;
+    job.status = "failed";
+    job.endTime = new Date();
+    await job.save();
+  }
+};
+
+export const getJobs = async (
+  condition?: Partial<Job> | Partial<Job>[],
+): Promise<Job[]> => {
+  if (condition) {
+    return Job.find({ where: condition });
+  }
+  return Job.find();
+};
+
+export const startIfAvailable = async (): Promise<void> => {
+  log(`checking: ${checking}`);
+  if (checking) {
+    // Return immediately if the function is already running. This is to prevent accidentally starting multiple jobs on one resource.
+    return;
+  }
+  try {
+    checking = true;
+    const jobs = await getJobs(
+      firstRun ? { status: "running" } : { status: "waiting" },
+    );
+    log(jobs);
+    if (jobs.length === 0) {
+      return;
+    }
+    const uniqueResources = getResourcesFromJobs(jobs);
+    // eslint-disable-next-line no-restricted-syntax
+    for (const id of uniqueResources) {
+      // uniqueResources.forEach((id) => {
+      if (firstRun || isResourceFree(id, jobs)) {
+        const filteredJobs = filterByResource(id, jobs);
+        // As the jobs array is filtered by runtimeResourceId and it is free, its clear that there must be at least one item left in the array suitable for running.
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        const job = orderByPriority(filteredJobs)[0]!;
+        job.status = "running";
+        // eslint-disable-next-line no-await-in-loop
+        await job.save();
+        // Do not await the result
+        run(job);
+      }
+    }
+  } catch (error) {
+    //
+  } finally {
+    firstRun = false;
+    checking = false;
+  }
 };
 
 // const softStopJob = () => {};

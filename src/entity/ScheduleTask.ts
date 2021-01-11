@@ -18,6 +18,7 @@ export default class ScheduleTask extends Base {
   schedule!: Schedule;
 
   @ManyToOne(() => Task, (task) => task.scheduleTask, {
+    eager: true,
     nullable: false,
   })
   task!: Task;

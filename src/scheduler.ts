@@ -38,7 +38,6 @@ export const init = async (): Promise<void> => {
         id.toString(),
         rule,
         async (): Promise<Job> => {
-          log(`Adding job with id ${id} and rule ${rule} to jobs`);
           return addJob(schedule);
         },
       );

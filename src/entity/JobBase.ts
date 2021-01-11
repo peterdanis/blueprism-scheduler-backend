@@ -1,5 +1,5 @@
+import { Column, UpdateDateColumn } from "typeorm";
 import Base from "./Base";
-import { Column } from "typeorm";
 import { defaultPriority } from "../utils/getSetting";
 
 type Status =
@@ -40,6 +40,6 @@ export default class JobBase extends Base {
   @Column({ default: 1 })
   subStep!: number;
 
-  @Column()
+  @UpdateDateColumn()
   updateTime!: Date;
 }

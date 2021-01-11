@@ -94,7 +94,7 @@ export default (async () => {
       name: "Test schedule 1",
       rule: "* * * * *",
       runtimeResource: vm1,
-      validFrom: new Date().toISOString(),
+      validFrom: new Date(),
     });
     await schedule1.save();
 
@@ -102,7 +102,7 @@ export default (async () => {
       name: "Test schedule 2",
       rule: "*/5 * * * *",
       runtimeResource: vm2,
-      validFrom: new Date().toISOString(),
+      validFrom: new Date(),
     });
     await schedule2.save();
 
