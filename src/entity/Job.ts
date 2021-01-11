@@ -4,7 +4,15 @@ import { defaultPriority } from "../utils/getSetting";
 import RuntimeResource from "./RuntimeResource";
 import Schedule from "./Schedule";
 
-type Status = "waiting" | "running" | "finished" | "failed";
+type Status =
+  | "canceled"
+  | "checking"
+  | "failed"
+  | "finished"
+  | "running"
+  | "skipped"
+  | "stopped"
+  | "waiting";
 
 @Entity()
 export default class Job extends Base {
@@ -20,10 +28,10 @@ export default class Job extends Base {
   @Column()
   status!: Status;
 
-  @Column({ default: 0 })
+  @Column({ default: 1 })
   step!: number;
 
-  @Column({ default: 0 })
+  @Column({ default: 1 })
   subStep!: number;
 
   @ManyToOne(() => RuntimeResource, (runtimeResource) => runtimeResource.job, {
