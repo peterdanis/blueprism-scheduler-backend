@@ -33,6 +33,7 @@ export default async (): Promise<void> => {
       "schedule",
       "runtime_resource",
       "job",
+      "job-log",
     ];
 
     await Promise.all(
@@ -52,7 +53,7 @@ export default async (): Promise<void> => {
             onRetry: () => {
               log(`retrying to delete table ${table}`);
             },
-            retries: 3,
+            retries: 5,
           },
         ).catch(() => {
           // do nothing

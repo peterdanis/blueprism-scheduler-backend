@@ -1,4 +1,5 @@
 import "reflect-metadata";
+import { addJob, startIfAvailable } from "./controller/job";
 import {
   dbHost,
   dbName,
@@ -32,20 +33,13 @@ export const init = async (): Promise<void> => {
 
     const schedules = await Schedule.find();
     schedules.forEach((schedule) => {
-      const { id, rule, priority, runtimeResource } = schedule;
+      const { id, rule } = schedule;
       scheduleJob(
         id.toString(),
         rule,
         async (): Promise<Job> => {
           log(`Adding job with id ${id} and rule ${rule} to jobs`);
-          const job = Job.create({
-            priority,
-            runtimeResource,
-            schedule,
-            startTime: new Date(),
-            status: "waiting",
-          });
-          return job.save();
+          return addJob(schedule);
         },
       );
     });
@@ -53,5 +47,13 @@ export const init = async (): Promise<void> => {
     log(error);
   }
 };
+
+setInterval(async () => {
+  try {
+    await startIfAvailable();
+  } catch (error) {
+    log(error);
+  }
+}, 5000);
 
 export const dummy = "dummy";

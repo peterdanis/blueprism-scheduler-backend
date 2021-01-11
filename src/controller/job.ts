@@ -1,6 +1,7 @@
 import Job from "../entity/Job";
 import log from "../utils/logger";
 import Schedule from "../entity/Schedule";
+import ScheduleTask from "../entity/ScheduleTask";
 
 let checking = false;
 const runningJobs: Job[] = [];
@@ -42,8 +43,27 @@ const isResourceFree = (id: number, jobs: Job[]): boolean => {
   );
 };
 
-const run = (job: Job) => {
-  const { sessionId, step, subStep } = job;
+const run = async (job: Job): Promise<void> => {
+  const {
+    sessionId,
+    step,
+    subStep,
+    runtimeResource: { id },
+    schedule: { scheduleTask },
+  } = job;
+  // Step is indexed from 1, need to substract 1 to get the correct array index
+  if (scheduleTask.length === 0) {
+    return;
+  }
+  const stepDetails = scheduleTask.sort(
+    (first, second) => first.step - second.step,
+  )[step - 1];
+  const {
+    delayAfter,
+    task: { process, inputs, softTimeout, hardTimeout, name },
+  } = stepDetails as ScheduleTask;
+  log(`Send request to resource ${id}`);
+  throw new Error("test");
 };
 
 export const getJobs = async (): Promise<Job[]> => {
@@ -51,6 +71,7 @@ export const getJobs = async (): Promise<Job[]> => {
 };
 
 export const startIfAvailable = async (): Promise<void> => {
+  log(`checking: ${checking}`);
   if (checking) {
     // Return immediately if the function is already running. This is to prevent accidentally starting multiple jobs on one resource.
     return;
@@ -65,7 +86,8 @@ export const startIfAvailable = async (): Promise<void> => {
     uniqueResources.forEach((id) => {
       if (isResourceFree(id, jobs)) {
         const filteredJobs = filterByResource(id, jobs);
-        // As the jobs array is filtered by runtimeResourceId and it is free, its clear that there must be at least one item left in the array suitable for running
+        // As the jobs array is filtered by runtimeResourceId and it is free, its clear that there must be at least one item left in the array suitable for running.
+        // Do not await the result
         // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
         run(orderByPriority(filteredJobs)[0]!);
       }
@@ -85,11 +107,12 @@ export const addJob = async (schedule: Schedule): Promise<Job> => {
   log(`Adding job with id ${id} and rule ${rule} to jobs`);
 
   const job = Job.create({
+    addTime: new Date(),
     priority,
     runtimeResource,
     schedule,
-    startTime: new Date(),
     status: "waiting",
+    updateTime: new Date().toISOString(),
   });
   return job.save();
 };

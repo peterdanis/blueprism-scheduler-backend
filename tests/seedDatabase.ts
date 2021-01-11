@@ -9,6 +9,7 @@ import {
 import clearDatabase from "./clearDatabase";
 import { createConnection } from "typeorm";
 import Job from "../src/entity/Job";
+import JobLog from "../src/entity/JobLog";
 import log from "../src/utils/logger";
 import RuntimeResource from "../src/entity/RuntimeResource";
 import Schedule from "../src/entity/Schedule";
@@ -22,7 +23,15 @@ export default (async () => {
   try {
     connection = await createConnection({
       database: dbName,
-      entities: [User, RuntimeResource, Task, Job, Schedule, ScheduleTask],
+      entities: [
+        Job,
+        JobLog,
+        RuntimeResource,
+        Schedule,
+        ScheduleTask,
+        Task,
+        User,
+      ],
       host: dbHost,
       logging: ["error", "warn"],
       password: dbPassword,

@@ -22,7 +22,9 @@ export default class Schedule extends Base {
   @Column({ default: new Date(253402214400000).toISOString() }) // Equals to 31st of December 9999
   validUntil!: Date;
 
-  @OneToMany(() => ScheduleTask, (scheduleTask) => scheduleTask.schedule)
+  @OneToMany(() => ScheduleTask, (scheduleTask) => scheduleTask.schedule, {
+    eager: true,
+  })
   scheduleTask!: ScheduleTask[];
 
   @OneToMany(() => Job, (job) => job.schedule)
