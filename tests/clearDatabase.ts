@@ -27,9 +27,9 @@ export default async (): Promise<void> => {
     const queryRunner = connection.createQueryRunner();
 
     const tables: string[] = [
-      "schedule_instruction",
+      "schedule_task",
       "user",
-      "instruction",
+      "task",
       "schedule",
       "runtime_resource",
       "job",

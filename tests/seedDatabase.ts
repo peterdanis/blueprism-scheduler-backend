@@ -8,12 +8,12 @@ import {
 } from "../src/utils/getEnvVariable";
 import clearDatabase from "./clearDatabase";
 import { createConnection } from "typeorm";
-import Instruction from "../src/entity/Instruction";
 import Job from "../src/entity/Job";
 import log from "../src/utils/logger";
 import RuntimeResource from "../src/entity/RuntimeResource";
 import Schedule from "../src/entity/Schedule";
-import ScheduleInstruction from "../src/entity/ScheduleInstruction";
+import ScheduleTask from "../src/entity/ScheduleTask";
+import Task from "../src/entity/Task";
 import User from "../src/entity/User";
 
 export default (async () => {
@@ -22,14 +22,7 @@ export default (async () => {
   try {
     connection = await createConnection({
       database: dbName,
-      entities: [
-        User,
-        RuntimeResource,
-        Instruction,
-        Job,
-        Schedule,
-        ScheduleInstruction,
-      ],
+      entities: [User, RuntimeResource, Task, Job, Schedule, ScheduleTask],
       host: dbHost,
       logging: ["error", "warn"],
       password: dbPassword,
@@ -65,15 +58,15 @@ export default (async () => {
     });
     await vm2.save();
 
-    const instruction1 = Instruction.create({
+    const task1 = Task.create({
       hardTimeout: 100000,
       name: "Login 2",
       process: "Login",
       softTimeout: 100000,
     });
-    await instruction1.save();
+    await task1.save();
 
-    const instruction2 = Instruction.create({
+    const task2 = Task.create({
       hardTimeout: 100000,
       inputs: [
         {
@@ -86,7 +79,7 @@ export default (async () => {
       process: "Some process",
       softTimeout: 100000,
     });
-    await instruction2.save();
+    await task2.save();
 
     const schedule1 = Schedule.create({
       name: "Test schedule 1",
@@ -104,29 +97,29 @@ export default (async () => {
     });
     await schedule2.save();
 
-    const scheduleInstruction1 = ScheduleInstruction.create({
+    const scheduleTask1 = ScheduleTask.create({
       delayAfter: 1000,
-      instruction: instruction1,
       schedule: schedule1,
       step: 1,
+      task: task1,
     });
-    await scheduleInstruction1.save();
+    await scheduleTask1.save();
 
-    const scheduleInstruction2 = ScheduleInstruction.create({
+    const scheduleTask2 = ScheduleTask.create({
       delayAfter: 1000,
-      instruction: instruction2,
       schedule: schedule1,
       step: 2,
+      task: task2,
     });
-    await scheduleInstruction2.save();
+    await scheduleTask2.save();
 
-    const scheduleInstruction3 = ScheduleInstruction.create({
+    const scheduleTask3 = ScheduleTask.create({
       delayAfter: 1000,
-      instruction: instruction1,
       schedule: schedule2,
       step: 1,
+      task: task1,
     });
-    await scheduleInstruction3.save();
+    await scheduleTask3.save();
 
     log("Dummies executed");
   } catch (error) {

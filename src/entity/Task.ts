@@ -1,6 +1,6 @@
 import { Column, Entity, OneToMany } from "typeorm";
 import Base from "./Base";
-import ScheduleInstruction from "./ScheduleInstruction";
+import ScheduleTask from "./ScheduleTask";
 
 interface Input {
   "@name": string;
@@ -9,7 +9,7 @@ interface Input {
 }
 
 @Entity()
-export default class Instruction extends Base {
+export default class Task extends Base {
   @Column({ nullable: true, type: "simple-json" })
   inputs!: Input[];
 
@@ -22,11 +22,8 @@ export default class Instruction extends Base {
   @Column()
   process!: string;
 
-  @OneToMany(
-    () => ScheduleInstruction,
-    (scheduleInstruction) => scheduleInstruction.instruction,
-  )
-  scheduleInstruction!: ScheduleInstruction[];
+  @OneToMany(() => ScheduleTask, (scheduleTask) => scheduleTask.task)
+  scheduleTask!: ScheduleTask[];
 
   @Column({ default: 86400000 }) // The default 86400000ms equals to 1d
   softTimeout!: number;

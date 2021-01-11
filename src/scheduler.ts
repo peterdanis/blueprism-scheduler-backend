@@ -7,27 +7,20 @@ import {
   dbUsername,
 } from "./utils/getEnvVariable";
 import { createConnection } from "typeorm";
-import Instruction from "./entity/Instruction";
 import Job from "./entity/Job";
 import log from "./utils/logger";
 import RuntimeResource from "./entity/RuntimeResource";
 import Schedule from "./entity/Schedule";
-import ScheduleInstruction from "./entity/ScheduleInstruction";
 import { scheduleJob } from "node-schedule";
+import ScheduleTask from "./entity/ScheduleTask";
+import Task from "./entity/Task";
 import User from "./entity/User";
 
 export const init = async (): Promise<void> => {
   try {
     await createConnection({
       database: dbName,
-      entities: [
-        User,
-        RuntimeResource,
-        Instruction,
-        Job,
-        Schedule,
-        ScheduleInstruction,
-      ],
+      entities: [User, RuntimeResource, Task, Job, Schedule, ScheduleTask],
       host: dbHost,
       logging: ["error", "warn"],
       password: dbPassword,

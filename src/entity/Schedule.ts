@@ -3,7 +3,7 @@ import Base from "./Base";
 import { defaultPriority } from "../utils/getSetting";
 import Job from "./Job";
 import RuntimeResource from "./RuntimeResource";
-import ScheduleInstruction from "./ScheduleInstruction";
+import ScheduleTask from "./ScheduleTask";
 
 @Entity()
 export default class Schedule extends Base {
@@ -22,11 +22,8 @@ export default class Schedule extends Base {
   @Column({ default: new Date(253402214400000).toISOString() }) // Equals to 31st of December 9999
   validUntil!: Date;
 
-  @OneToMany(
-    () => ScheduleInstruction,
-    (scheduleInstruction) => scheduleInstruction.schedule,
-  )
-  scheduleInstruction!: ScheduleInstruction[];
+  @OneToMany(() => ScheduleTask, (scheduleTask) => scheduleTask.schedule)
+  scheduleTask!: ScheduleTask[];
 
   @OneToMany(() => Job, (job) => job.schedule)
   job!: Job[];
