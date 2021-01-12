@@ -4,7 +4,6 @@ import { defaultPriority } from "../utils/getSetting";
 
 type Status =
   | "canceled"
-  | "checking"
   | "failed"
   | "finished"
   | "running"

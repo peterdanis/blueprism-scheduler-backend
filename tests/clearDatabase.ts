@@ -44,7 +44,5 @@ export default async (connection: Connection): Promise<void> => {
     log("DB cleared");
   } catch (error) {
     log(error);
-  } finally {
-    await connection?.close();
   }
 };

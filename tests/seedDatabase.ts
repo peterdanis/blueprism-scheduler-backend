@@ -27,14 +27,18 @@ export default (async () => {
     log(users2);
 
     const vm1 = RuntimeResource.create({
+      auth: "basic",
       friendlyName: "vm1",
       hostname: "vm1.something.com",
+      port: 3000,
     });
     await vm1.save();
 
     const vm2 = RuntimeResource.create({
+      auth: "basic",
       friendlyName: "vm2",
       hostname: "vm2.something.com",
+      port: 3000,
     });
     await vm2.save();
 

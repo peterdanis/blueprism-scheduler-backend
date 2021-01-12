@@ -102,8 +102,10 @@ export const getJobs = async (
   return Job.find();
 };
 
+/**
+ * Starts queued jobs on free resources. In case of first run, it will try to restart previously running jobs (e.g. after app crash).
+ */
 export const startIfAvailable = async (): Promise<void> => {
-  log(`checking: ${checking}`);
   if (checking) {
     // Return immediately if the function is already running. This is to prevent accidentally starting multiple jobs on one resource.
     return;
@@ -123,14 +125,14 @@ export const startIfAvailable = async (): Promise<void> => {
       // uniqueResources.forEach((id) => {
       if (firstRun || isResourceFree(id, jobs)) {
         const filteredJobs = filterByResource(id, jobs);
-        // As the jobs array is filtered by runtimeResourceId and it is free, its clear that there must be at least one item left in the array suitable for running.
-        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-        const job = orderByPriority(filteredJobs)[0]!;
-        job.status = "running";
-        // eslint-disable-next-line no-await-in-loop
-        await job.save();
-        // Do not await the result
-        run(job);
+        const job = orderByPriority(filteredJobs)[0];
+        if (job) {
+          job.status = "running";
+          // eslint-disable-next-line no-await-in-loop
+          await job.save();
+          // Do not await the result
+          run(job);
+        }
       }
     }
   } catch (error) {
