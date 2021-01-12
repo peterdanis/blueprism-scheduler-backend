@@ -30,6 +30,7 @@ export const createSchedulerDBConnection = async (): Promise<Connection> => {
     ],
     host: dbHost,
     logging: ["error", "warn"],
+    options: { enableArithAbort: true },
     password: dbPassword,
     port: dbPort,
     type: "mssql",
