@@ -1,15 +1,5 @@
-import "reflect-metadata";
-import {
-  dbHost,
-  dbName,
-  dbPassword,
-  dbPort,
-  dbUsername,
-} from "../src/utils/getEnvVariable";
 import clearDatabase from "./clearDatabase";
-import { createConnection } from "typeorm";
-import Job from "../src/entity/Job";
-import JobLog from "../src/entity/JobLog";
+import { createSchedulerDBConnection } from "../src/utils/connection";
 import log from "../src/utils/logger";
 import RuntimeResource from "../src/entity/RuntimeResource";
 import Schedule from "../src/entity/Schedule";
@@ -18,29 +8,10 @@ import Task from "../src/entity/Task";
 import User from "../src/entity/User";
 
 export default (async () => {
-  await clearDatabase();
-  let connection;
+  const connection = await createSchedulerDBConnection();
+  await clearDatabase(connection);
   try {
-    connection = await createConnection({
-      database: dbName,
-      entities: [
-        Job,
-        JobLog,
-        RuntimeResource,
-        Schedule,
-        ScheduleTask,
-        Task,
-        User,
-      ],
-      host: dbHost,
-      logging: ["error", "warn"],
-      password: dbPassword,
-      port: dbPort,
-      synchronize: true,
-      type: "mssql",
-      username: dbUsername,
-    });
-    log(`Connected to: ${dbHost}, database: ${dbName}`);
+    await connection.synchronize();
 
     const user1 = User.create({ admin: true, name: "Dummy1" });
     await user1.save();

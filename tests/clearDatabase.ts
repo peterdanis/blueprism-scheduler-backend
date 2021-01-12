@@ -1,29 +1,9 @@
-import "reflect-metadata";
-import {
-  dbHost,
-  dbName,
-  dbPassword,
-  dbPort,
-  dbUsername,
-} from "../src/utils/getEnvVariable";
-import { createConnection } from "typeorm";
+import { Connection } from "typeorm";
 import log from "../src/utils/logger";
 import retry from "async-retry";
 
-export default async (): Promise<void> => {
-  let connection;
+export default async (connection: Connection): Promise<void> => {
   try {
-    connection = await createConnection({
-      database: dbName,
-      host: dbHost,
-      logging: false,
-      password: dbPassword,
-      port: dbPort,
-      type: "mssql",
-      username: dbUsername,
-    });
-    log(`Connected to: ${dbHost}, database: ${dbName}`);
-
     const queryRunner = connection.createQueryRunner();
 
     const tables: string[] = [
@@ -53,7 +33,7 @@ export default async (): Promise<void> => {
             onRetry: () => {
               log(`retrying to delete table ${table}`);
             },
-            retries: 5,
+            retries: 6,
           },
         ).catch(() => {
           // do nothing
