@@ -16,19 +16,19 @@ export default class JobBase extends Base {
   addTime!: Date;
 
   @Column({ nullable: true })
-  endTime!: Date;
+  endTime?: Date;
 
   @Column({ nullable: true })
-  message!: string;
+  message?: string;
 
   @Column({ default: defaultPriority })
   priority!: number; // De-normalized priority field - to by able to get the queued schedule higher or lower priority
 
   @Column({ nullable: true })
-  sessionId!: string;
+  sessionId?: string;
 
   @Column({ nullable: true })
-  startTime!: Date;
+  startTime?: Date;
 
   @Column()
   status!: Status;
@@ -39,6 +39,6 @@ export default class JobBase extends Base {
   @Column({ default: 1 })
   subStep!: number;
 
-  @UpdateDateColumn()
+  @UpdateDateColumn({ type: "datetime" })
   updateTime!: Date;
 }

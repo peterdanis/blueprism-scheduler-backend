@@ -8,7 +8,7 @@ type Auth = "basic" | "apikey";
 @Entity()
 export default class RuntimeResource extends Base {
   @Column({ nullable: true })
-  apiKey!: string;
+  apiKey?: string;
 
   @Column()
   auth!: Auth;
@@ -20,13 +20,13 @@ export default class RuntimeResource extends Base {
   hostname!: string;
 
   @Column({ nullable: true })
-  password!: string;
+  password?: string;
 
   @Column()
   port!: number;
 
   @Column({ nullable: true })
-  username!: string;
+  username?: string;
 
   @OneToMany(() => Job, (job) => job.schedule)
   job!: Job[];

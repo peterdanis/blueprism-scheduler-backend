@@ -11,7 +11,7 @@ interface Input {
 @Entity()
 export default class Task extends Base {
   @Column({ nullable: true, type: "simple-json" })
-  inputs!: Input[];
+  inputs?: Input[];
 
   @Column({ default: 86400000 }) // The default 86400000ms equals to 1d
   hardTimeout!: number;
