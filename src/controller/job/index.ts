@@ -1,19 +1,11 @@
-import { EventEmitter } from "events";
+import { JobRef, run } from "./run";
 import Job from "../../entity/Job";
-import JobLog from "../../entity/JobLog";
 import log from "../../utils/logger";
 import Schedule from "../../entity/Schedule";
-import ScheduleTask from "../../entity/ScheduleTask";
-import sleep from "../../utils/sleep";
-
-// TODO: delete
-class A extends EventEmitter {
-  job!: Job;
-}
 
 let checking = false;
 let firstRun = true;
-const runningJobRef: A[] = [];
+let runningJobRef: JobRef[] = [];
 
 /**
  * Returns array of unique resource ids found in given job array
@@ -62,7 +54,10 @@ const isResourceFree = (id: number, jobs: Job[]): boolean => {
 /**
  * Adds job to queue and returns the reference to it.
  */
-export const addJob = async (schedule: Schedule): Promise<Job> => {
+export const addJob = async (
+  schedule: Schedule,
+  startReason: string,
+): Promise<Job> => {
   const { id, rule, priority, runtimeResource } = schedule;
 
   const job = Job.create({
@@ -70,85 +65,11 @@ export const addJob = async (schedule: Schedule): Promise<Job> => {
     priority,
     runtimeResource,
     schedule,
+    startReason,
     status: "waiting",
   });
   log(`Adding job, schedule ${id} and rule ${rule} to jobs`);
   return job.save();
-};
-
-const run = async (job: Job): Promise<void> => {
-  const jobRef = job;
-
-  // TODO: delete
-  const a = new A();
-  a.job = job;
-  runningJobRef.push(a);
-
-  const innerRun = async (): Promise<void> => {
-    const {
-      // sessionId,
-      step,
-      // subStep,
-      // runtimeResource: { id },
-      schedule: { scheduleTask },
-    } = jobRef;
-    log(`running job ${jobRef.id}, step ${step} `);
-    if (step > scheduleTask.length) {
-      log(`no more steps to run in job ${jobRef.id}`);
-      return;
-    }
-    // Step is indexed from 1, need to substract 1 to get the correct array index
-    const stepDetails = scheduleTask.sort(
-      (first, second) => first.step - second.step,
-    )[step - 1];
-    const {
-      delayAfter,
-      // task: { process, inputs, softTimeout, hardTimeout, name },
-    } = stepDetails as ScheduleTask;
-    //
-    await sleep(20000);
-    jobRef.step = step + 1;
-    jobRef.save();
-
-    await sleep(delayAfter);
-    await innerRun();
-  };
-
-  try {
-    if (job.schedule.scheduleTask.length === 0) {
-      throw new Error("No tasks defined for this schedule.");
-    }
-
-    // TODO: delete
-    a.on("stop", () => {
-      log(`stop job ${jobRef.id}`);
-      throw new Error("Stop");
-    });
-    //
-
-    await innerRun();
-    jobRef.status = "finished";
-    jobRef.endTime = new Date();
-    await jobRef.save();
-  } catch (error) {
-    log(error.message);
-    jobRef.message = error.message;
-    jobRef.status = "failed";
-    jobRef.endTime = new Date();
-    await jobRef.save();
-  } finally {
-    const jobLog = JobLog.create({
-      ...jobRef,
-      runtimeResourceId: jobRef.runtimeResource.id,
-      scheduleId: jobRef.schedule.id,
-    });
-
-    await jobLog.save();
-    runningJobRef.splice(
-      runningJobRef.findIndex((el) => el.job.id === a.job.id),
-    );
-    await jobRef.remove();
-  }
 };
 
 export const getJobs = async (
@@ -170,6 +91,9 @@ export const startIfAvailable = async (): Promise<void> => {
   }
   try {
     checking = true;
+    // Check jobRef array for items marked for deletion
+    runningJobRef = runningJobRef.filter((jobRef) => !jobRef.delete);
+
     const jobs = await getJobs([{ status: "running" }, { status: "waiting" }]);
     if (jobs.length === 0) {
       return;
@@ -193,7 +117,8 @@ export const startIfAvailable = async (): Promise<void> => {
           // eslint-disable-next-line no-await-in-loop
           await job.save();
           // Do not await the result
-          run(job);
+          const jobRef = run(job);
+          runningJobRef.push(jobRef);
         }
       }
     }
@@ -204,19 +129,3 @@ export const startIfAvailable = async (): Promise<void> => {
     checking = false;
   }
 };
-
-// const softStopJob = () => {};
-
-// const hardStopJob = () => {};
-
-// TODO: delete
-setInterval(() => {
-  log(runningJobRef);
-  if (runningJobRef.length > 0) {
-    if (Math.floor(Math.random() * 100) > 90) {
-      log(`stop job test ${runningJobRef[0]?.job.id}`);
-
-      runningJobRef[0]?.emit("stop");
-    }
-  }
-}, 2000);
