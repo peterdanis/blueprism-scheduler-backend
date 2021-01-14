@@ -10,6 +10,7 @@ export const init = async (): Promise<void> => {
   try {
     await createSchedulerDBConnection();
 
+    // TODO: check start and end date/time before adding to jobs
     const schedules = await Schedule.find();
     schedules.forEach((schedule) => {
       const { id, rule } = schedule;
@@ -17,7 +18,7 @@ export const init = async (): Promise<void> => {
         id.toString(),
         rule,
         async (): Promise<Job> => {
-          return addJob(schedule);
+          return addJob(schedule, "scheduler");
         },
       );
     });

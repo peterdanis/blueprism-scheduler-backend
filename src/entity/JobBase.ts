@@ -6,6 +6,7 @@ type JobStatus =
   | "canceled" // if skipped or canceled from user side
   | "failed" // if step status on BP side is terminated and step is setup to abort early, or if any error occurs, or if stopped by hardTimeout
   | "finished" // if all steps finished successfully
+  | "finished with notes" // if some steps failed or were stopped, but the job finished
   | "running" // if any step is still running
   | "stopped" // if stopped by softTimeout or by softStop request, either from scheduler side or user side
   | "waiting"; // if the job is waiting in queue
