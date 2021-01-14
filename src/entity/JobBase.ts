@@ -2,14 +2,19 @@ import { Column, UpdateDateColumn } from "typeorm";
 import Base from "./Base";
 import { defaultPriority } from "../utils/getSetting";
 
-type Status =
-  | "canceled"
-  | "failed"
-  | "finished"
-  | "running"
-  | "skipped"
-  | "stopped"
-  | "waiting";
+type JobStatus =
+  | "canceled" // if skipped or canceled from user side
+  | "failed" // if step status on BP side is terminated and step is setup to abort early, or if any error occurs, or if stopped by hardTimeout
+  | "finished" // if all steps finished successfully
+  | "running" // if any step is still running
+  | "stopped" // if stopped by softTimeout or by softStop request, either from scheduler side or user side
+  | "waiting"; // if the job is waiting in queue
+
+type StepStatus = "failed" | "finished" | "stopped";
+
+interface Steps {
+  [key: number]: StepStatus;
+}
 
 export default class JobBase extends Base {
   @Column()
@@ -31,10 +36,19 @@ export default class JobBase extends Base {
   startTime?: Date;
 
   @Column()
-  status!: Status;
+  startReason!: string;
+
+  @Column()
+  status!: JobStatus;
 
   @Column({ default: 1 })
   step!: number;
+
+  @Column({ nullable: true, type: "simple-json" })
+  steps?: Steps;
+
+  @Column({ nullable: true })
+  stopReason!: string;
 
   @Column({ default: 1 })
   subStep!: number;
