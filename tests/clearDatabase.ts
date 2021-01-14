@@ -13,7 +13,7 @@ export default async (connection: Connection): Promise<void> => {
       "schedule",
       "runtime_resource",
       "job",
-      "job-log",
+      "job_log",
     ];
 
     await Promise.all(

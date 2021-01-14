@@ -48,7 +48,7 @@ export default class JobBase extends Base {
   steps?: Steps;
 
   @Column({ nullable: true })
-  stopReason!: string;
+  stopReason?: string;
 
   @Column({ default: 1 })
   subStep!: number;

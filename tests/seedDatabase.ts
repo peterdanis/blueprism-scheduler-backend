@@ -13,18 +13,10 @@ export default (async () => {
   try {
     await connection.synchronize();
 
-    const user1 = User.create({ admin: true, name: "Dummy1" });
-    await user1.save();
-    const user2 = User.create({
-      name: `Dummy${Math.floor(Math.random() * 1000000)}`,
+    const user1 = User.create({
+      name: `Dummy${new Date().getTime()}`,
     });
-    await user2.save();
-    const users1 = await User.find();
-    log(users1);
-    const deletedUser = await User.findOne({ where: { name: "Dummy1" } });
-    deletedUser?.remove();
-    const users2 = await User.find();
-    log(users2);
+    await user1.save();
 
     const vm1 = RuntimeResource.create({
       auth: "basic",
