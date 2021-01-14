@@ -5,16 +5,31 @@ import Job from "./Job";
 import RuntimeResource from "./RuntimeResource";
 import ScheduleTask from "./ScheduleTask";
 
+interface OnError {
+  action: "email";
+  emailTo?: string;
+  emailCc?: string;
+}
+
 @Entity()
 export default class Schedule extends Base {
   @Column({ unique: true })
   name!: string;
+
+  @Column({ default: 86400000 }) // The default 86400000ms equals to 1d
+  hardTimeout!: number;
+
+  @Column({ nullable: true, type: "simple-json" })
+  onError?: OnError;
 
   @Column({ default: defaultPriority })
   priority!: number;
 
   @Column()
   rule!: string;
+
+  @Column({ default: 86400000 }) // The default 86400000ms equals to 1d
+  softTimeout!: number;
 
   @Column()
   validFrom!: Date;
