@@ -9,6 +9,7 @@
     "plugin:security/recommended",
     "prettier/@typescript-eslint"
   ],
+  "parserOptions": { "project": "./tsconfig.json" },
   "plugins": ["@typescript-eslint", "prettier", "security"],
   "rules": {
     "linebreak-style": "off",
@@ -26,6 +27,7 @@
     ],
     "no-use-before-define": "off", // see https://github.com/typescript-eslint/typescript-eslint/blob/master/packages/eslint-plugin/docs/rules/no-use-before-define.md#how-to-use
     "@typescript-eslint/no-use-before-define": ["error"],
+    "@typescript-eslint/no-floating-promises": ["warn"],
     "@typescript-eslint/explicit-function-return-type": [
       "warn",
       {
