@@ -2,6 +2,7 @@ import { EventEmitter } from "events";
 import Job from "../../entity/Job";
 import JobLog from "../../entity/JobLog";
 import log from "../../utils/logger";
+import path from "path";
 import ScheduleTask from "../../entity/ScheduleTask";
 import { Worker } from "worker_threads";
 
@@ -26,10 +27,12 @@ export class JobRef extends EventEmitter {
 }
 
 export const run = (job: Job): JobRef => {
+  log("run start");
   let jobHardStopRequested = false;
   let jobSoftStopRequested = false;
   let partialFailure = false;
-  let worker = new Worker("./runWorker.js");
+  log(path.resolve(__dirname, "./runWorker.js"));
+  let worker = new Worker(path.resolve(__dirname, "./runWorker.js"), {});
   const jobRef = new JobRef(job);
 
   const jobHardStopTimer = setTimeout(() => {
@@ -89,6 +92,7 @@ export const run = (job: Job): JobRef => {
     });
     await jobLog.save();
     await job.remove();
+    // TODO: add reset route call
   };
 
   const runWorker = (): void => {
@@ -187,7 +191,7 @@ export const run = (job: Job): JobRef => {
     worker.on("exit", () => {
       // Create new worker and re-add listeners if worker.terminate() was used, but it was not the last step
       if (!jobSoftStopRequested || !jobHardStopRequested) {
-        worker = new Worker("./runWorker.js");
+        worker = new Worker(path.resolve(__dirname, "./runWorker.js"));
         addWorkerListeners();
       }
     });
@@ -210,6 +214,8 @@ export const run = (job: Job): JobRef => {
   });
 
   addWorkerListeners();
+  // TODO: add reset route call
+  // TODO: wrap it in worker.init()?
   runWorker();
 
   return jobRef;

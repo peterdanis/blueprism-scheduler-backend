@@ -3,10 +3,12 @@ import log from "../../utils/logger";
 import { parentPort } from "worker_threads";
 import ScheduleTask from "../../entity/ScheduleTask";
 import sleep from "../../utils/sleep";
+import { WorkerMessage } from "./run";
 
-// await sleep(job.schedule.scheduleTask.delayAfter);
+log("worker start");
 
-parentPort?.on(
+// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+parentPort!.on(
   "message",
   async (job: Job): Promise<void> => {
     const { subStep } = job;
@@ -21,15 +23,23 @@ parentPort?.on(
       // TODO:
       // retry?
       log(`post processes, ${task.process}, ${task.inputs}`);
-      const sessionId = "1234";
+      const message: WorkerMessage = { sessionId: "1234" };
       setTimeout(() => {
-        parentPort?.postMessage({ sessionId });
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        parentPort!.postMessage(message);
       }, 6000);
       return;
     }
     // check status
     // retry?
     // TODO:
+    log(`get processes/id, ${job.sessionId},`);
+    const message: WorkerMessage = { completed: true };
+
+    setTimeout(() => {
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+      parentPort!.postMessage(message);
+    }, 6000);
     await sleep(delayAfter);
   },
 );
