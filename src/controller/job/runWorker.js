@@ -1,7 +1,3 @@
-/* eslint-disable @typescript-eslint/no-var-requires */
+const path = require("path");
 require("ts-node").register();
-require("./runWorker.ts");
-
-// const path = require("path");
-
-// require(path.resolve(__dirname, "./runWorker.ts"));
+require(path.resolve(__dirname, "./runWorker.ts"));

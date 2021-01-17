@@ -1,7 +1,7 @@
 import { EventEmitter } from "events";
 import Job from "../../entity/Job";
 import JobLog from "../../entity/JobLog";
-import log from "../../utils/logger";
+import logger from "../../utils/logger";
 import path from "path";
 import ScheduleTask from "../../entity/ScheduleTask";
 import { Worker } from "worker_threads";
@@ -27,12 +27,14 @@ export class JobRef extends EventEmitter {
 }
 
 export const run = (job: Job): JobRef => {
-  log("run start");
+  const log = logger.child({ jobId: job.id });
+
+  const { schedule, runtimeResource } = job;
   let jobHardStopRequested = false;
   let jobSoftStopRequested = false;
   let partialFailure = false;
-  log(path.resolve(__dirname, "./runWorker.js"));
-  let worker = new Worker(path.resolve(__dirname, "./runWorker.js"), {});
+  let worker = new Worker(path.resolve(__dirname, "./runWorker.js"));
+  log.info("Starting job", { workerId: worker.threadId });
   const jobRef = new JobRef(job);
 
   const jobHardStopTimer = setTimeout(() => {
@@ -41,23 +43,24 @@ export const run = (job: Job): JobRef => {
 
   const jobSoftStopTimer = setTimeout(() => {
     jobRef.emit("jobSoftStop", `Job${job.id}`);
-  }, job.schedule.hardTimeout);
+  }, job.schedule.softTimeout);
 
   const getCurrentTask = (): ScheduleTask | undefined =>
-    job.schedule.scheduleTask.sort((task1, task2) => task1.step - task2.step)[
+    schedule.scheduleTask.sort((task1, task2) => task1.step - task2.step)[
       job.step - 1
     ];
 
-  const lastStep = (): boolean => getCurrentTask()?.step === job.step;
+  const lastStep = (): boolean =>
+    getCurrentTask()?.step === schedule.scheduleTask.length;
 
   // TODO:
   const sendStop = async (): Promise<void> => {
     try {
-      log("running stop");
+      log.info("running stop");
       // retry?
       // fetch.post
     } catch (error) {
-      log(error);
+      log.error(error);
     }
   };
 
@@ -77,6 +80,7 @@ export const run = (job: Job): JobRef => {
         job.status = "finished";
         break;
     }
+    log.info("Closing job", { status: job.status });
     job.endTime = new Date();
     /* eslint-enable no-param-reassign */
     await job.save();
@@ -87,7 +91,7 @@ export const run = (job: Job): JobRef => {
     jobRef.delete = true;
     const jobLog = JobLog.create({
       ...job,
-      runtimeResourceId: job.runtimeResource.id,
+      runtimeResourceId: runtimeResource.id,
       scheduleId: job.schedule.id,
     });
     await jobLog.save();
@@ -116,8 +120,7 @@ export const run = (job: Job): JobRef => {
   };
 
   const onTaskError = async (error: Error): Promise<void> => {
-    log(`Error while executing job with id ${job.id}`);
-    log(error);
+    log.error(error);
     if (getCurrentTask()?.abortEarly) {
       await closeJob(true);
       return;
@@ -128,13 +131,15 @@ export const run = (job: Job): JobRef => {
 
   const stepSoftStop = async (): Promise<void> => {
     try {
+      log.warn("stepSoftStop requested");
       await sendStop();
     } catch (error) {
-      log(error);
+      log.error(error);
     }
   };
 
   const stepHardStop = async (): Promise<void> => {
+    log.warn("stepHardStop requested");
     await worker.terminate();
     if (lastStep()) {
       await closeJob();
@@ -198,7 +203,7 @@ export const run = (job: Job): JobRef => {
   };
 
   jobRef.on("jobSoftStop", async (user: string) => {
-    log(`Soft stop requested for job with id ${job.id}, by ${user}`);
+    log.warn("jobSoftStop requested", { user });
     jobSoftStopRequested = true;
     if (job.subStep === 1) {
       await closeJob();
@@ -208,14 +213,13 @@ export const run = (job: Job): JobRef => {
   });
 
   jobRef.on("jobHardStop", async (user: string) => {
-    log(`Hard stop requested for job with id ${job.id}, by ${user}`);
+    log.warn("jobHardStop requested", { user });
     jobHardStopRequested = true;
     await closeJob(true);
   });
 
   addWorkerListeners();
   // TODO: add reset route call
-  // TODO: wrap it in worker.init()?
   runWorker();
 
   return jobRef;
