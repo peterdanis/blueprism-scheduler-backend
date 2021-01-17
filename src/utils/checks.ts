@@ -13,18 +13,18 @@ import log from "./logger";
 export default (): void => {
   if (apiAuth === "basic") {
     if (!apiUsername || !apiPassword) {
-      log(
+      log.error(
         "Error: API authentication username or password are not set. Please set them in .env file",
       );
       process.exit(1);
     }
   } else {
-    log(
+    log.warn(
       "Warning: API authentication not set. Do not use the API without ani authentication in production",
     );
   }
   if (!dbName || !dbUsername || !dbPassword || !dbHost || !dbPort) {
-    log(
+    log.error(
       "Error: Scheduler database connection settings are not set. Please set them in .env file",
     );
     process.exit(1);

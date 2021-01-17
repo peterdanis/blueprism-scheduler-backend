@@ -68,7 +68,10 @@ export const addJob = async (
     startReason,
     status: "waiting",
   });
-  log(`Adding job, schedule ${id} and rule ${rule} to jobs`);
+  log.info("Adding schedule jobs", {
+    rule,
+    scheduleId: id,
+  });
   return job.save();
 };
 

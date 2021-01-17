@@ -36,7 +36,7 @@ export const createSchedulerDBConnection = async (): Promise<Connection> => {
     type: "mssql",
     username: dbUsername,
   });
-  log(`Connected to: ${dbHost}, database: ${dbName}`);
+  log.info(`Connected to: ${dbHost}, database: ${dbName}`);
   return connection;
 };
 
@@ -51,6 +51,6 @@ export const createBlueprismDBConnection = async (): Promise<Connection> => {
     type: "mssql",
     username: dbUsername,
   });
-  log(`Connected to: ${dbHost}, database: ${dbName}`);
+  log.info(`Connected to: ${dbHost}, database: ${dbName}`);
   return connection;
 };

@@ -10,7 +10,7 @@ export default (app: Application): http.Server => {
 
   if (useHTTPS === "true") {
     if (!certFile) {
-      log(
+      log.error(
         "Error: Generate self signed certificate, set correct cert path in .env file (or env variable) or switch to non-secure HTTP instead of HTTPS in .env file (or env variable).",
       );
       process.exit(1);
@@ -23,21 +23,23 @@ export default (app: Application): http.Server => {
       server = https.createServer(options, app);
     } catch (error) {
       if (error.message === "mac verify failure") {
-        log(
+        log.error(
           "Error: Please check whether certificate password stored in .env (or env variable) file is correct",
         );
       } else if (error.code === "ENOENT") {
-        log(
+        log.error(
           `Error: ${error.message}. Generate self signed certificate, set correct cert path in .env file (or env variable) or switch to non-secure HTTP instead of HTTPS in .env file (or env variable).`,
         );
       } else {
-        log(`Error: ${error.message}`);
+        log.error(`Error: ${error.message}`);
       }
       process.exit(1);
     }
   } else {
     server = http.createServer(app);
-    log("Warning: Using HTTPS over HTTP is highly recommended in production");
+    log.warn(
+      "Warning: Using HTTPS over HTTP is highly recommended in production",
+    );
   }
   return server;
 };

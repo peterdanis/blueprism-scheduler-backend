@@ -27,11 +27,11 @@ export const init = async (): Promise<void> => {
       try {
         await startIfAvailable();
       } catch (error) {
-        log(error);
+        log.error(error);
       }
     }, checkInterval);
   } catch (error) {
-    log(error);
+    log.error(error);
   }
 };
 
