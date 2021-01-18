@@ -1,3 +1,4 @@
+import { getHeader, getUrl } from "../../utils/getUrlAndHeader";
 import axios from "axios";
 import axiosRetry from "axios-retry";
 import { EventEmitter } from "events";
@@ -30,6 +31,14 @@ export class JobRef extends EventEmitter {
   }
 }
 
+export const getCurrentTask = (job: Job): ScheduleTask | undefined =>
+  job.schedule.scheduleTask.sort((task1, task2) => task1.step - task2.step)[
+    job.step - 1
+  ];
+
+export const lastStep = (job: Job): boolean =>
+  getCurrentTask(job)?.step === job.schedule.scheduleTask.length;
+
 export const run = (job: Job): JobRef => {
   const log = logger.child({ jobId: job.id });
 
@@ -43,42 +52,17 @@ export const run = (job: Job): JobRef => {
 
   const jobHardStopTimer = setTimeout(() => {
     jobRef.emit("jobHardStop", `Job${job.id}`);
-  }, job.schedule.hardTimeout);
+  }, schedule.hardTimeout);
 
   const jobSoftStopTimer = setTimeout(() => {
     jobRef.emit("jobSoftStop", `Job${job.id}`);
-  }, job.schedule.softTimeout);
-
-  const getCurrentTask = (): ScheduleTask | undefined =>
-    schedule.scheduleTask.sort((task1, task2) => task1.step - task2.step)[
-      job.step - 1
-    ];
-
-  const lastStep = (): boolean =>
-    getCurrentTask()?.step === schedule.scheduleTask.length;
+  }, schedule.softTimeout);
 
   const sendStop = async (): Promise<void> => {
-    const { https, hostname, port, auth, username, password } = runtimeResource;
-    let header;
     try {
       log.info("running stop");
-      if (auth === "basic" && username && password) {
-        header = {
-          auth: {
-            password,
-            username,
-          },
-        };
-      }
-
       // will retry via axios-retry
-      await axios.post(
-        `${https ? "https" : "http"}://${hostname}:${port}/${
-          job.sessionId
-        }/stop`,
-        {},
-        header,
-      );
+      await axios.post(getUrl(job, "stop"), {}, getHeader(job));
     } catch (error) {
       log.error(error);
     }
@@ -112,11 +96,10 @@ export const run = (job: Job): JobRef => {
     const jobLog = JobLog.create({
       ...job,
       runtimeResourceId: runtimeResource.id,
-      scheduleId: job.schedule.id,
+      scheduleId: schedule.id,
     });
     await jobLog.save();
     await job.remove();
-    // TODO: add reset route call
   };
 
   const runWorker = (): void => {
@@ -126,7 +109,7 @@ export const run = (job: Job): JobRef => {
   };
 
   const onStepCompleted = async (): Promise<void> => {
-    if (lastStep()) {
+    if (lastStep(job)) {
       await closeJob();
       return;
     }
@@ -141,7 +124,7 @@ export const run = (job: Job): JobRef => {
 
   const onTaskError = async (error: Error): Promise<void> => {
     log.error(error);
-    if (getCurrentTask()?.abortEarly) {
+    if (getCurrentTask(job)?.abortEarly) {
       await closeJob(true);
       return;
     }
@@ -161,7 +144,7 @@ export const run = (job: Job): JobRef => {
   const stepHardStop = async (): Promise<void> => {
     log.warn("stepHardStop requested");
     await worker.terminate();
-    if (lastStep()) {
+    if (lastStep(job)) {
       await closeJob();
       return;
     }
