@@ -19,6 +19,9 @@ export default class RuntimeResource extends Base {
   @Column()
   hostname!: string;
 
+  @Column({ default: true })
+  https!: boolean;
+
   @Column({ nullable: true })
   password?: string;
 

@@ -31,7 +31,7 @@ export default async (connection: Connection): Promise<void> => {
           {
             factor: 1.5,
             onRetry: () => {
-              log(`retrying to delete table ${table}`);
+              log.info(`retrying to delete table ${table}`);
             },
             retries: 6,
           },
@@ -41,8 +41,8 @@ export default async (connection: Connection): Promise<void> => {
       }),
     );
 
-    log("DB cleared");
+    log.info("DB cleared");
   } catch (error) {
-    log(error);
+    log.error(error);
   }
 };

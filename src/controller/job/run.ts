@@ -1,3 +1,5 @@
+import axios from "axios";
+import axiosRetry from "axios-retry";
 import { EventEmitter } from "events";
 import Job from "../../entity/Job";
 import JobLog from "../../entity/JobLog";
@@ -5,6 +7,8 @@ import logger from "../../utils/logger";
 import path from "path";
 import ScheduleTask from "../../entity/ScheduleTask";
 import { Worker } from "worker_threads";
+
+axiosRetry(axios, { retries: 3, retryDelay: () => 20 });
 
 export interface WorkerMessage {
   completed?: boolean;
@@ -53,12 +57,28 @@ export const run = (job: Job): JobRef => {
   const lastStep = (): boolean =>
     getCurrentTask()?.step === schedule.scheduleTask.length;
 
-  // TODO:
   const sendStop = async (): Promise<void> => {
+    const { https, hostname, port, auth, username, password } = runtimeResource;
+    let header;
     try {
       log.info("running stop");
-      // retry?
-      // fetch.post
+      if (auth === "basic" && username && password) {
+        header = {
+          auth: {
+            password,
+            username,
+          },
+        };
+      }
+
+      // will retry via axios-retry
+      await axios.post(
+        `${https ? "https" : "http"}://${hostname}:${port}/${
+          job.sessionId
+        }/stop`,
+        {},
+        header,
+      );
     } catch (error) {
       log.error(error);
     }
