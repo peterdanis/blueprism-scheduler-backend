@@ -11,13 +11,17 @@ import { Worker } from "worker_threads";
 
 axiosRetry(axios, { retries: 3, retryDelay: () => 20 });
 
+interface CustomError extends Error {
+  data?: unknown;
+}
+
 export interface WorkerMessage {
   completed?: boolean;
   hardTimeoutReached?: boolean;
   sessionId?: string;
   softTimeoutReached?: boolean;
   stopped?: boolean;
-  terminated?: boolean;
+  failed?: boolean;
 }
 
 export class JobRef extends EventEmitter {
@@ -36,8 +40,13 @@ export const getCurrentTask = (job: Job): ScheduleTask | undefined =>
     job.step - 1
   ];
 
-export const lastStep = (job: Job): boolean =>
-  getCurrentTask(job)?.step === job.schedule.scheduleTask.length;
+export const lastStep = (job: Job): boolean => {
+  const currentTask = getCurrentTask(job);
+  if (currentTask) {
+    return currentTask.step >= job.schedule.scheduleTask.length;
+  }
+  return true;
+};
 
 /**
  * Starts a new worker thread for each new job and controls job process flow.
@@ -137,8 +146,8 @@ export const run = (job: Job): JobRef => {
     runWorker();
   };
 
-  const onTaskError = async (error: Error): Promise<void> => {
-    log.error(error);
+  const onTaskError = async (error: CustomError): Promise<void> => {
+    log.error(error.message);
 
     if (getCurrentTask(job)?.abortEarly) {
       await closeJob(true);
@@ -176,7 +185,7 @@ export const run = (job: Job): JobRef => {
         sessionId,
         softTimeoutReached,
         stopped,
-        terminated,
+        failed,
       }: WorkerMessage) => {
         switch (true) {
           case completed:
@@ -185,8 +194,8 @@ export const run = (job: Job): JobRef => {
           case stopped:
             await onStepCompleted();
             break;
-          case terminated:
-            await onTaskError(new Error("Process terminated"));
+          case failed:
+            await onTaskError(new Error("Process failed"));
             break;
           case hardTimeoutReached:
             await stepHardStop();
