@@ -78,7 +78,7 @@ export const run = (job: Job): JobRef => {
       // will retry via axios-retry
       await axios.post(getUrl(job, "stop"), {}, getHeader(job));
     } catch (error) {
-      log.error(error);
+      log.error(error.message, { error });
     }
   };
 
@@ -106,7 +106,7 @@ export const run = (job: Job): JobRef => {
       // will retry via axios-retry
       await axios.post(getUrl(job, "reset"), {}, getHeader(job));
     } catch (error) {
-      log.error(error);
+      log.error(error.message, { error });
     }
 
     job.endTime = new Date();
@@ -147,13 +147,15 @@ export const run = (job: Job): JobRef => {
   };
 
   const onTaskError = async (error: CustomError): Promise<void> => {
-    log.error(error.message);
+    log.error(error.message, { error });
 
     if (getCurrentTask(job)?.abortEarly) {
+      log.info("Aborting early");
       await closeJob(true);
       return;
     }
     partialFailure = true;
+    log.info("Marked as partial failure, continuing");
     await onStepCompleted();
   };
 
@@ -162,7 +164,7 @@ export const run = (job: Job): JobRef => {
       log.warn("stepSoftStop requested");
       await sendStop();
     } catch (error) {
-      log.error(error);
+      log.error(error.message, { error });
     }
   };
 
