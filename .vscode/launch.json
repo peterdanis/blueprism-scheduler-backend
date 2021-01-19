@@ -10,14 +10,16 @@
       "name": "TS-Node - index.ts (w/o internals and node_modules)",
       "runtimeArgs": ["-r", "ts-node/register"],
       "args": ["${workspaceFolder}/src/index.ts"],
-      "skipFiles": ["<node_internals>/**", "node_modules/**"]
+      "skipFiles": ["<node_internals>/**", "node_modules/**"],
+      "outputCapture": "std"
     },
     {
       "type": "pwa-node",
       "request": "launch",
       "name": "TS-Node - index.ts (with internals and node_modules)",
       "runtimeArgs": ["-r", "ts-node/register"],
-      "args": ["${workspaceFolder}/src/index.ts"]
+      "args": ["${workspaceFolder}/src/index.ts"],
+      "outputCapture": "std"
     },
     {
       "type": "pwa-node",
@@ -25,7 +27,16 @@
       "name": "TS-Node - current file (w/o internals and node_modules)",
       "runtimeArgs": ["-r", "ts-node/register"],
       "args": ["${relativeFile}"],
-      "skipFiles": ["<node_internals>/**", "node_modules/**"]
+      "skipFiles": ["<node_internals>/**", "node_modules/**"],
+      "outputCapture": "std"
+    },
+    {
+      "name": "Node - launch built source files",
+      "program": "${workspaceFolder}/build/src/index.js",
+      "request": "launch",
+      "skipFiles": ["<node_internals>/**"],
+      "type": "pwa-node",
+      "outputCapture": "std"
     }
   ]
 }
