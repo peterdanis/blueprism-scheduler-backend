@@ -39,6 +39,11 @@ export const getCurrentTask = (job: Job): ScheduleTask | undefined =>
 export const lastStep = (job: Job): boolean =>
   getCurrentTask(job)?.step === job.schedule.scheduleTask.length;
 
+/**
+ * Starts a new worker thread for each new job and controls job process flow.
+ *
+ * @returns reference to job, to be able to stop it from outside.
+ */
 export const run = (job: Job): JobRef => {
   const log = logger.child({ jobId: job.id });
 
@@ -85,6 +90,16 @@ export const run = (job: Job): JobRef => {
         break;
     }
     log.info("Closing job", { status: job.status });
+
+    // Reset runtime resource after last step
+    try {
+      log.info("Post reset");
+      // will retry via axios-retry
+      await axios.post(getUrl(job, "reset"), {}, getHeader(job));
+    } catch (error) {
+      log.error(error);
+    }
+
     job.endTime = new Date();
     /* eslint-enable no-param-reassign */
     await job.save();
@@ -124,6 +139,7 @@ export const run = (job: Job): JobRef => {
 
   const onTaskError = async (error: Error): Promise<void> => {
     log.error(error);
+
     if (getCurrentTask(job)?.abortEarly) {
       await closeJob(true);
       return;

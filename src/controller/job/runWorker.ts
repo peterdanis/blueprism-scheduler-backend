@@ -20,24 +20,23 @@ parentPort!.on(
 
     // Reset runtime resource before first step
     if (step === 1) {
-      try {
-        log.info("Post reset");
-        // will retry via axios-retry
-        await axios.post(getUrl(job, "reset"), {}, getHeader(job));
-      } catch (error) {
-        log.error(error);
-      }
+      log.info("Post reset");
+      // will retry via axios-retry
+      await axios.post(getUrl(job, "reset"), {}, getHeader(job));
     }
 
     if (subStep === 1) {
+      const data =
+        task.inputs?.length === 0
+          ? { process: task.process }
+          : { inputs: task.inputs, process: task.process };
       log.info("Post processes", { process: task.process });
-
       const response = await axios.post(
-        getUrl(job, "reset"),
-        { inputs: task.inputs, process: task.process },
+        getUrl(job, "start"),
+        data,
         getHeader(job),
       );
-      log.info("Response", { response });
+      log.info("Response", { response: response.data });
 
       /* eslint-disable no-param-reassign */
       job.sessionId = "123456";
@@ -52,17 +51,21 @@ parentPort!.on(
     // Check status
     log.info("Get processes/id", { sessionId: job.sessionId });
 
-    let response = "running";
-    while (response === "running" || response === "stopping") {
+    let status = "running";
+    while (status === "running" || status === "stopping") {
       // eslint-disable-next-line no-await-in-loop
       await sleep(30000);
-      // eslint-disable-next-line no-await-in-loop
-      response = await axios.post(
-        getUrl(job, "reset"),
-        { inputs: task.inputs, process: task.process },
-        getHeader(job),
-      );
-      log.info("Response", { response });
+      try {
+        // eslint-disable-next-line no-await-in-loop
+        const response = await axios.post(
+          getUrl(job, "getStatus"),
+          { inputs: task.inputs, process: task.process },
+          getHeader(job),
+        );
+        log.info("Response", { response: response.data });
+      } catch (error) {
+        log.error(error);
+      }
     }
 
     const message: WorkerMessage = { completed: true };
@@ -70,16 +73,9 @@ parentPort!.on(
     parentPort!.postMessage(message);
 
     await sleep(delayAfter);
-
-    // Reset runtime resource after last step
-    if (lastStep(job) && subStep === 2) {
-      try {
-        log.info("Post reset");
-        // will retry via axios-retry
-        await axios.post(getUrl(job, "reset"), {}, getHeader(job));
-      } catch (error) {
-        log.error(error);
-      }
-    }
   },
 );
+
+process.on("unhandledRejection", (error) => {
+  throw error;
+});

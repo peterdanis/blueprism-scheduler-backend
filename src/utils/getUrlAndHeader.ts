@@ -12,7 +12,7 @@ type Route = "stop" | "start" | "getStatus" | "reset";
 export const getUrl = (job: Job, route: Route): string => {
   const { https, hostname, port } = job.runtimeResource;
 
-  const baseUrl = `${https ? "https" : "http"}://${hostname}:${port}/`;
+  const baseUrl = `${https ? "https" : "http"}://${hostname}:${port}`;
   switch (route) {
     case "stop":
       return `${baseUrl}/processes/${job.sessionId}/stop`;
