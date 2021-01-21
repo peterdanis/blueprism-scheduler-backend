@@ -60,6 +60,7 @@ export const run = (job: Job): JobRef => {
   let jobHardStopRequested = false;
   let jobSoftStopRequested = false;
   let partialFailure = false;
+  let stopping = false;
   let worker = new Worker(path.resolve(__dirname, "./runWorker.js"));
   log.info("Starting job", { workerId: worker.threadId });
   const jobRef = new JobRef(job);
@@ -83,6 +84,7 @@ export const run = (job: Job): JobRef => {
   };
 
   const closeJob = async (failed?: boolean): Promise<void> => {
+    stopping = true;
     /* eslint-disable no-param-reassign */
     switch (true) {
       case failed:
@@ -226,7 +228,7 @@ export const run = (job: Job): JobRef => {
 
     worker.on("exit", () => {
       // Create new worker and re-add listeners if worker.terminate() was used, but it was not the last step
-      if (!jobSoftStopRequested || !jobHardStopRequested) {
+      if (!jobSoftStopRequested || !jobHardStopRequested || !stopping) {
         worker = new Worker(path.resolve(__dirname, "./runWorker.js"));
         addWorkerListeners();
       }
@@ -250,7 +252,6 @@ export const run = (job: Job): JobRef => {
   });
 
   addWorkerListeners();
-  // TODO: add reset route call
   runWorker();
 
   return jobRef;
