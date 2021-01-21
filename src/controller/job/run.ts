@@ -1,6 +1,6 @@
+import axiosRetry, { isNetworkOrIdempotentRequestError } from "axios-retry";
 import { getHeader, getUrl } from "../../utils/getUrlAndHeader";
 import axios from "axios";
-import axiosRetry from "axios-retry";
 import { EventEmitter } from "events";
 import Job from "../../entity/Job";
 import JobLog from "../../entity/JobLog";
@@ -9,7 +9,16 @@ import path from "path";
 import ScheduleTask from "../../entity/ScheduleTask";
 import { Worker } from "worker_threads";
 
-axiosRetry(axios, { retries: 3, retryDelay: () => 20 });
+axiosRetry(axios, {
+  retries: 3,
+  retryCondition: (error) => {
+    if (error.response?.status === 503) {
+      return true;
+    }
+    return isNetworkOrIdempotentRequestError(error);
+  },
+  retryDelay: (retryCount) => retryCount * 30000,
+});
 
 interface CustomError extends Error {
   data?: unknown;
@@ -74,12 +83,12 @@ export const run = (job: Job): JobRef => {
   }, schedule.softTimeout);
 
   const sendStop = async (): Promise<void> => {
+    log.info("Running stop");
     try {
-      log.info("running stop");
       // will retry via axios-retry
       await axios.post(getUrl(job, "stop"), {}, getHeader(job));
     } catch (error) {
-      log.error(error.message, { error });
+      log.error(error.message, { error: error.response.data });
     }
   };
 
@@ -130,13 +139,11 @@ export const run = (job: Job): JobRef => {
   };
 
   const runWorker = (): void => {
-    if (!jobSoftStopRequested || !jobHardStopRequested) {
-      worker.postMessage(job);
-    }
+    worker.postMessage(job);
   };
 
   const onStepCompleted = async (): Promise<void> => {
-    if (lastStep(job)) {
+    if (lastStep(job) || jobSoftStopRequested || jobHardStopRequested) {
       await closeJob();
       return;
     }
@@ -163,16 +170,14 @@ export const run = (job: Job): JobRef => {
   };
 
   const stepSoftStop = async (): Promise<void> => {
-    try {
-      log.warn("stepSoftStop requested");
-      await sendStop();
-    } catch (error) {
-      log.error(error.message, { error });
-    }
+    log.warn("stepSoftStop requested");
+    partialFailure = true;
+    await sendStop();
   };
 
   const stepHardStop = async (): Promise<void> => {
     log.warn("stepHardStop requested");
+    partialFailure = true;
     await worker.terminate();
     if (lastStep(job)) {
       await closeJob();
@@ -182,45 +187,46 @@ export const run = (job: Job): JobRef => {
   };
 
   const addWorkerListeners = (): void => {
-    worker.on(
-      "message",
-      async ({
+    worker.on("message", async (value: WorkerMessage) => {
+      const {
         completed,
         hardTimeoutReached,
         sessionId,
         softTimeoutReached,
         stopped,
         failed,
-      }: WorkerMessage) => {
-        switch (true) {
-          case completed:
-            await onStepCompleted();
-            break;
-          case stopped:
-            await onStepCompleted();
-            break;
-          case failed:
-            await onTaskError(new Error("Process failed"));
-            break;
-          case hardTimeoutReached:
-            await stepHardStop();
-            break;
-          case softTimeoutReached:
-            await stepSoftStop();
-            break;
-          case !!sessionId:
-            /* eslint-disable no-param-reassign */
-            job.subStep++;
-            job.sessionId = sessionId;
-            /* eslint-enable no-param-reassign */
-            await job.save();
-            break;
+      } = value;
+      log.info("Message from worker", { value });
 
-          default:
-            break;
-        }
-      },
-    );
+      switch (true) {
+        case completed:
+          await onStepCompleted();
+          break;
+        case stopped:
+          await onStepCompleted();
+          break;
+        case failed:
+          await onTaskError(new Error("Process failed"));
+          break;
+        case hardTimeoutReached:
+          await stepHardStop();
+          break;
+        case softTimeoutReached:
+          await stepSoftStop();
+          break;
+        case !!sessionId:
+          /* eslint-disable no-param-reassign */
+          job.subStep++;
+          job.sessionId = sessionId;
+          /* eslint-enable no-param-reassign */
+          await job.save();
+          break;
+        default:
+          log.error("Unknown message");
+          await closeJob(true);
+          break;
+      }
+    });
 
     worker.on("error", async (error) => {
       await onTaskError(error);

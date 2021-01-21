@@ -1,7 +1,7 @@
+import axios, { AxiosError } from "axios";
+import axiosRetry, { isNetworkOrIdempotentRequestError } from "axios-retry";
 import { getCurrentTask, WorkerMessage } from "./run";
 import { getHeader, getUrl } from "../../utils/getUrlAndHeader";
-import axios from "axios";
-import axiosRetry from "axios-retry";
 import Job from "../../entity/Job";
 import logger from "../../utils/logger";
 import { parentPort } from "worker_threads";
@@ -9,7 +9,16 @@ import { recheckDelay } from "../../utils/getSetting";
 import ScheduleTask from "../../entity/ScheduleTask";
 import sleep from "../../utils/sleep";
 
-axiosRetry(axios, { retries: 3, retryDelay: () => 20 });
+axiosRetry(axios, {
+  retries: 3,
+  retryCondition: (error) => {
+    if (error.response?.status === 503) {
+      return true;
+    }
+    return isNetworkOrIdempotentRequestError(error);
+  },
+  retryDelay: (retryCount) => retryCount * 30000,
+});
 
 type Status = "Completed" | "Running" | "Stopped" | "Stopping" | "Terminated";
 
@@ -90,16 +99,19 @@ const messageHandler = async (_job: Job): Promise<void> => {
       );
       break;
   }
+  await sleep(delayAfter);
+
   // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
   parentPort!.postMessage(message);
-
-  await sleep(delayAfter);
 };
 
 // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
 parentPort!.on("message", messageHandler);
 
 // Rethrow to be catched by worker.on("error") handler
-process.on("unhandledRejection", (error) => {
+process.on("unhandledRejection", (error: AxiosError) => {
+  if (error.response) {
+    throw new Error(`${error.message}. ${error.response.data}`);
+  }
   throw error;
 });
