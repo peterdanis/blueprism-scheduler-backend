@@ -119,6 +119,7 @@ export const run = (job: Job): JobRef => {
     jobRef.delete = true;
     const jobLog = JobLog.create({
       ...job,
+      jobId: job.id,
       runtimeResourceId: runtimeResource.id,
       scheduleId: schedule.id,
     });
