@@ -234,7 +234,7 @@ export const run = (job: Job): JobRef => {
 
     worker.on("exit", () => {
       // Create new worker and re-add listeners if worker.terminate() was used, but it was not the last step
-      if (!jobSoftStopRequested || !jobHardStopRequested || !stopping) {
+      if (!jobSoftStopRequested && !jobHardStopRequested && !stopping) {
         worker = new Worker(path.resolve(__dirname, "./runWorker.js"));
         addWorkerListeners();
       }
