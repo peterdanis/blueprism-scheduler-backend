@@ -70,9 +70,10 @@ export const run = (job: Job): JobRef => {
   let jobSoftStopRequested = false;
   let partialFailure = false;
   let stopping = false;
-  let worker = new Worker(path.resolve(__dirname, "./runWorker.js"));
-  log.info("Starting job", { workerId: worker.threadId });
+  let worker = new Worker(path.join(__dirname, "runWorker.js"));
   const jobRef = new JobRef(job);
+
+  log.info("Starting job", { workerId: worker.threadId });
 
   const jobHardStopTimer = setTimeout(() => {
     jobRef.emit("jobHardStop", `Job${job.id}`);
@@ -124,7 +125,11 @@ export const run = (job: Job): JobRef => {
     /* eslint-enable no-param-reassign */
     await job.save();
 
-    await worker.terminate();
+    try {
+      await worker.terminate();
+    } catch (error) {
+      log.error(error.message);
+    }
     clearTimeout(jobHardStopTimer);
     clearTimeout(jobSoftStopTimer);
     jobRef.delete = true;

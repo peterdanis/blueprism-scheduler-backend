@@ -6,7 +6,7 @@ import log from "./utils/logger";
 import Schedule from "./entity/Schedule";
 import { scheduleJob } from "node-schedule";
 
-export const init = async (): Promise<void> => {
+export default async (): Promise<void> => {
   try {
     await createSchedulerDBConnection();
 
@@ -34,5 +34,3 @@ export const init = async (): Promise<void> => {
     log.error(error);
   }
 };
-
-export const dummy = "dummy";
