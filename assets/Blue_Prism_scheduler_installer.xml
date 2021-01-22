@@ -1,9 +1,9 @@
 <service>
-  <id>blueprism-automatec-api</id>
-  <name>Blue Prism AutomateC API</name>
-  <description>Expose AutomateC.exe (Blue Prism) as HTTP API</description>
+  <id>blueprism-scheduler</id>
+  <name>Blue Prism scheduler</name>
+  <description>Custom scheduler for Blue Prism RPA</description>
   <startmode>automatic</startmode>
-  <executable>Blue_Prism_AutomateC_API_server.exe</executable>
+  <executable>Blue_Prism_scheduler_server.exe</executable>
   <log mode="roll-by-size">
     <sizeThreshold>1024</sizeThreshold>
     <keepFiles>8</keepFiles>
