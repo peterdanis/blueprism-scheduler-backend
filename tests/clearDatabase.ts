@@ -20,18 +20,13 @@ export default async (connection: Connection): Promise<void> => {
       tables.map(async (table) => {
         await retry(
           async () => {
-            try {
-              await queryRunner.dropTable(table);
-            } catch (error) {
-              if (!error.message.match(/Table .* does not exist/)) {
-                throw error;
-              }
-            }
+            await queryRunner.dropTable(table, true, false);
+            log.info(`Deleting ${table} successful`);
           },
           {
             factor: 1.5,
             onRetry: () => {
-              log.info(`retrying to delete table ${table}`);
+              log.info(`Retrying to delete table ${table}`);
             },
             retries: 6,
           },

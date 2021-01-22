@@ -1,0 +1,120 @@
+{
+  "user": [{ "name": "testuser" }],
+  "runtimeResource": [
+    {
+      "auth": "basic",
+      "friendlyName": "vm1",
+      "hostname": "vm1.something.com",
+      "port": 3000,
+      "username": "rpa",
+      "password": "p@ssword#1"
+    },
+    {
+      "auth": "basic",
+      "friendlyName": "vm2",
+      "hostname": "vm2.something.com",
+      "port": 3000,
+      "username": "rpa",
+      "password": "p@ssword#2"
+    }
+  ],
+  "task": [
+    {
+      "hardTimeout": 100000,
+      "name": "Login",
+      "process": "Login",
+      "softTimeout": 100000
+    },
+    {
+      "hardTimeout": 150000,
+      "inputs": [
+        {
+          "@name": "Time to run",
+          "@type": "text",
+          "@value": "120"
+        }
+      ],
+      "name": "Test process 2mins",
+      "process": "Test process",
+      "softTimeout": 150000
+    },
+    {
+      "hardTimeout": 350000,
+      "inputs": [
+        {
+          "@name": "Time to run",
+          "@type": "text",
+          "@value": "300"
+        }
+      ],
+      "name": "Test process 5mins",
+      "process": "Test process",
+      "softTimeout": 350000
+    }
+  ],
+  "schedule": [
+    {
+      "name": "Test schedule 1",
+      "rule": "* * * * *",
+      "runtimeResource": "vm1",
+      "validFrom": "now"
+    },
+    {
+      "name": "Test schedule 2",
+      "rule": "*/2 * * * *",
+      "runtimeResource": "vm2",
+      "validFrom": "now"
+    },
+    {
+      "name": "Test schedule 3",
+      "priority": 40,
+      "rule": "*/2 * * * *",
+      "runtimeResource": "vm2",
+      "validFrom": "now"
+    }
+  ],
+  "scheduleTask": [
+    {
+      "delayAfter": 30000,
+      "schedule": "Test schedule 1",
+      "step": 1,
+      "task": "Login"
+    },
+    {
+      "delayAfter": 30000,
+      "schedule": "Test schedule 2",
+      "step": 1,
+      "task": "Login"
+    },
+    {
+      "delayAfter": 30000,
+      "schedule": "Test schedule 3",
+      "step": 1,
+      "task": "Login"
+    },
+    {
+      "delayAfter": 0,
+      "schedule": "Test schedule 1",
+      "step": 2,
+      "task": "Test process 2mins"
+    },
+    {
+      "delayAfter": 0,
+      "schedule": "Test schedule 2",
+      "step": 2,
+      "task": "Test process 2mins"
+    },
+    {
+      "delayAfter": 0,
+      "schedule": "Test schedule 3",
+      "step": 2,
+      "task": "Test process 2mins"
+    },
+    {
+      "delayAfter": 0,
+      "schedule": "Test schedule 1",
+      "step": 3,
+      "task": "Test process 5mins"
+    }
+  ]
+}
