@@ -7,12 +7,15 @@
     "node": ">=12.0.0"
   },
   "scripts": {
-    "build": "rmdir /Q /S build & nexe -i ./src/index.js -o ./build/Blue_Prism_scheduler_server.exe -t windows-x64-12.18.2 && copy .\\assets\\*.* .\\build\\ && ren .\\build\\WinSW.NET4.exe Blue_Prism_scheduler_installer.exe && powershell -Command \"(gc .sample-env) -replace 'NODE_ENV=development', 'NODE_ENV=production' -replace 'BP_API_FILELOG=false', 'BP_API_FILELOG=true' | Out-File -encoding ASCII ./build/.env\"",
-    "debug": "set DEBUG=* & npm start",
+    "build": "nexe -i ./pre-build/index.js -o ./build/Blue_Prism_scheduler_server.exe -t windows-x64-12.18.2 && npm run copy-assets",
+    "copy-assets": "copy .\\assets\\*.* .\\build\\ && copy .\\sample.env .\\build\\.env && ren .\\build\\WinSW.NET4.exe Blue_Prism_scheduler_installer.exe",
+    "debug": "set DEBUG=* & npm dev",
+    "dev": "nodemon --watch .env --watch src ./src/index.ts",
     "lint": "eslint ./src/**/*.{ts,tsx}",
     "lint-fix": "eslint --fix ./src/**/*.{ts,tsx} ./tests/**/*.{ts,tsx}",
+    "prebuild": "rmdir /Q /S build & rmdir /Q /S pre-build & tsc",
     "seedDB": "ts-node ./tests/seedDatabase.ts",
-    "start": "nodemon --watch .env --watch src ./src/index.ts",
+    "start": "ts-node ./src/index.ts",
     "test": "jest",
     "test-cover": "jest --coverage --noStackTrace",
     "test-watch": "jest --watch --noStackTrace"
@@ -65,6 +68,7 @@
     "eslint-plugin-promise": "^4.2.1",
     "eslint-plugin-security": "^1.4.0",
     "jest": "^26.6.3",
+    "nexe": "^4.0.0-beta.16",
     "nodemon": "^2.0.6",
     "prettier": "^2.2.1",
     "ts-node": "^9.1.1",

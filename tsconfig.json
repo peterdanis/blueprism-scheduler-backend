@@ -12,7 +12,7 @@
     "module": "commonjs",
     "moduleResolution": "node",
     "noUncheckedIndexedAccess": true,
-    "outDir": "./build",
+    "outDir": "./pre-build",
     "resolveJsonModule": true,
     "rootDir": ".",
     "skipLibCheck": true,
@@ -20,7 +20,8 @@
     "target": "es2019",
     "experimentalDecorators": true
   },
-  "exclude": ["node_modules"],
+  "exclude": ["node_modules", "package.json"],
+  "include": ["src/**/*"],
   "ts-node": {
     "files": true
   }
