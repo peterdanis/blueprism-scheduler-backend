@@ -14,6 +14,7 @@ import RuntimeResource from "../entity/RuntimeResource";
 import Schedule from "../entity/Schedule";
 import ScheduleTask from "../entity/ScheduleTask";
 import Task from "../entity/Task";
+import typeOrmLogger from "./typeOrmLogger";
 import User from "../entity/User";
 
 export const createSchedulerDBConnection = async (): Promise<Connection> => {
@@ -29,7 +30,7 @@ export const createSchedulerDBConnection = async (): Promise<Connection> => {
       User,
     ],
     host: dbHost,
-    logging: ["error", "warn"],
+    logger: typeOrmLogger,
     options: { enableArithAbort: true },
     password: dbPassword,
     port: dbPort,
