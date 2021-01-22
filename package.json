@@ -7,7 +7,7 @@
     "node": ">=12.0.0"
   },
   "scripts": {
-    "build": "nexe -i ./pre-build/index.js -o ./build/Blue_Prism_scheduler_server.exe -t windows-x64-12.18.2 && npm run copy-assets",
+    "build": "pkg . --output ./build/Blue_Prism_scheduler_server.exe && npm run copy-assets",
     "copy-assets": "copy .\\assets\\*.* .\\build\\ && copy .\\sample.env .\\build\\.env && ren .\\build\\WinSW.NET4.exe Blue_Prism_scheduler_installer.exe",
     "debug": "set DEBUG=* & npm dev",
     "dev": "nodemon --watch .env --watch src ./src/index.ts",
@@ -19,6 +19,10 @@
     "test": "jest",
     "test-cover": "jest --coverage --noStackTrace",
     "test-watch": "jest --watch --noStackTrace"
+  },
+  "bin": "./pre-build/src/index.js",
+  "pkg": {
+    "assets": "./pre-build/**/*"
   },
   "repository": {
     "type": "git",
@@ -68,10 +72,9 @@
     "eslint-plugin-promise": "^4.2.1",
     "eslint-plugin-security": "^1.4.0",
     "jest": "^26.6.3",
-    "nexe": "^4.0.0-beta.16",
     "nodemon": "^2.0.6",
+    "pkg": "^4.4.9",
     "prettier": "^2.2.1",
-    "ts-node": "^9.1.1",
-    "uuid": "^8.3.2"
+    "ts-node": "^9.1.1"
   }
 }
