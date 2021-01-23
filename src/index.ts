@@ -3,7 +3,7 @@ import { AddressInfo } from "net";
 import app from "./api";
 import createServer from "./utils/createServer";
 import log from "./utils/logger";
-import schedulerInit from "./scheduler";
+import { init as schedulerInit } from "./scheduler";
 import { version } from "../package.json";
 
 // Print out some info
