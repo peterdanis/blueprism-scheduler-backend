@@ -47,6 +47,8 @@ Scheduler sends instruction which process to run and when via HTTP/HTTPS to API 
 - [ ] custom "on error" actions per task/schedule
 - [ ] put resource to maintenance mode (wait/softStop/hardStop options, with job priority -1)
 - [ ] drilldown job to steps, to see status of each step
+- [ ] timezone support
+- [ ] maintenance mode
 
 ### Stretch goal
 
