@@ -10,6 +10,7 @@ import {
 import Job from "../entity/Job";
 import JobLog from "../entity/JobLog";
 import log from "./logger";
+import { migration1611605973590 } from "../migration/1611605973590-migration";
 import RuntimeResource from "../entity/RuntimeResource";
 import Schedule from "../entity/Schedule";
 import ScheduleTask from "../entity/ScheduleTask";
@@ -23,6 +24,8 @@ const schedDbConfig: ConnectionOptions = {
   entities: [Job, JobLog, RuntimeResource, Schedule, ScheduleTask, Task, User],
   host: dbHost,
   logger: typeOrmLogger,
+  migrations: [migration1611605973590],
+  migrationsRun: true,
   options: { enableArithAbort: true },
   password: dbPassword,
   port: dbPort,
