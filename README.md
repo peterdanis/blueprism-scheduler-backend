@@ -6,9 +6,9 @@ Node.js based alternative to Blue Prism's built-in scheduler.
 
 Project consists of 3 parts:
 
-- web app
-- centralized scheduler
-- interface to Blueprism, running on each runtime resource
+- web app (not released yet, WIP)
+- centralized scheduler (this project)
+- interface to Blueprism, running on each runtime resource - (https://github.com/peterdanis/blueprism-automatec-api)
 
 Scheduler sends instruction which process to run and when via HTTP/HTTPS to API endpoint running on each runtime resource (Blue Prism's term for computer executing the automation), which serves as an interface between HTTP/HTTPS calls and "AutomateC.exe" (part of default Blue Prism installation).
 
@@ -20,6 +20,8 @@ Scheduler sends instruction which process to run and when via HTTP/HTTPS to API 
 - step is a particular instance of task, tied to a particular job execution
 
 ## Features
+
+# The project is still "work in progress" 🚧
 
 ### Must have
 
@@ -34,6 +36,8 @@ Scheduler sends instruction which process to run and when via HTTP/HTTPS to API 
 - [ ] force run job with adjustable wait time (for time sensitive schedules, with job priority 0)
 - [ ] skip job if maximum wait time in queue reached (schedule setting)
 - [ ] send email on error, customizable per schedule
+- [x] run from executable on Windows (via https://github.com/vercel/pkg)
+- [x] register as service on Windows (via https://github.com/winsw/winsw)
 
 ### Nice to have
 
