@@ -33,6 +33,7 @@ const schedDbConfig: ConnectionOptions = {
   username: dbUsername,
 };
 
+// Export scheduler DB config as default, for typeorm cli to work (e.g. for generating migrationts)
 export default schedDbConfig;
 
 export const createSchedulerDBConnection = async (): Promise<Connection> => {
