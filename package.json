@@ -11,14 +11,15 @@
     "copy-assets": "copy .\\assets\\*.* .\\build\\ && copy .\\sample.env .\\build\\.env && ren .\\build\\WinSW.NET4.exe Blue_Prism_scheduler_installer.exe",
     "debug": "set DEBUG=* & npm dev",
     "dev": "nodemon --watch .env --watch src ./src/index.ts",
-    "lint": "eslint ./src/**/*.{ts,tsx}",
     "lint-fix": "eslint --fix ./src/**/*.{ts,tsx} ./tests/**/*.{ts,tsx}",
+    "lint": "eslint ./src/**/*.{ts,tsx}",
+    "migration-generate": "node --require ts-node/register ./node_modules/typeorm/cli.js migration:generate -n migration -f ./src/utils/connection.ts",
     "prebuild": "rmdir /Q /S build & rmdir /Q /S pre-build & tsc",
     "seedDB": "ts-node ./tests/seedDatabase.ts",
     "start": "ts-node ./src/index.ts",
-    "test": "jest",
     "test-cover": "jest --coverage --noStackTrace",
-    "test-watch": "jest --watch --noStackTrace"
+    "test-watch": "jest --watch --noStackTrace",
+    "test": "jest"
   },
   "bin": "./pre-build/src/index.js",
   "pkg": {
