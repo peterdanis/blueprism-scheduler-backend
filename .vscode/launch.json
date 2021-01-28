@@ -31,11 +31,40 @@
       "outputCapture": "std"
     },
     {
-      "name": "Node - launch built source files",
-      "program": "${workspaceFolder}/build/src/index.js",
-      "request": "launch",
-      "skipFiles": ["<node_internals>/**"],
       "type": "pwa-node",
+      "request": "launch",
+      "name": "TSC - index.ts (w/o internals and node_modules)",
+      "program": "${workspaceFolder}/src/index.ts",
+      "preLaunchTask": "tsc: build - tsconfig.json",
+      "skipFiles": ["<node_internals>/**", "node_modules/**"],
+      "outputCapture": "std"
+    },
+    {
+      "type": "pwa-node",
+      "request": "launch",
+      "name": "TSC - index.ts (with internals and node_modules)",
+      "program": "${workspaceFolder}/src/index.ts",
+      "preLaunchTask": "tsc: build - tsconfig.json",
+      "outputCapture": "std"
+    },
+    {
+      "name": "Node - launch built source files",
+      "program": "${workspaceFolder}/pre-build/src/index.js",
+      "request": "launch",
+      "skipFiles": ["<node_internals>/**", "node_modules/**"],
+      "type": "pwa-node",
+      "outputCapture": "std"
+    },
+    {
+      "name": "Jest - debug tests",
+      "type": "node",
+      "request": "launch",
+      "runtimeArgs": [
+        "--inspect-brk",
+        "${workspaceRoot}/node_modules/jest/bin/jest.js",
+        "--runInBand"
+      ],
+      "port": 9229,
       "outputCapture": "std"
     }
   ]
