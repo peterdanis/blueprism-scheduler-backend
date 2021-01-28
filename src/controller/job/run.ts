@@ -7,6 +7,7 @@ import JobLog from "../../entity/JobLog";
 import logger from "../../utils/logger";
 import path from "path";
 import ScheduleTask from "../../entity/ScheduleTask";
+import { StepStatus } from "../../entity/JobBase";
 import { Worker } from "worker_threads";
 
 axiosRetry(axios, {
@@ -147,15 +148,18 @@ export const run = (job: Job): JobRef => {
     worker.postMessage(job);
   };
 
-  const onStepCompleted = async (): Promise<void> => {
-    if (lastStep(job) || jobSoftStopRequested || jobHardStopRequested) {
+  const onStepCompleted = async (stepStatus: StepStatus): Promise<void> => {
+    /* eslint-disable no-param-reassign */
+    job.steps = {
+      ...job.steps,
+      [job.step]: { sessionId: job.sessionId, status: stepStatus },
+    };
+    job.sessionId = undefined;
       await closeJob();
       return;
     }
-    /* eslint-disable no-param-reassign */
     job.step++;
     job.subStep = 1;
-    job.sessionId = undefined;
     await job.save();
     /* eslint-enable no-param-reassign */
     runWorker();
@@ -171,7 +175,7 @@ export const run = (job: Job): JobRef => {
     }
     partialFailure = true;
     log.info("Marked as partial failure, continuing");
-    await onStepCompleted();
+    await onStepCompleted("failed");
   };
 
   const stepSoftStop = async (): Promise<void> => {
@@ -188,7 +192,7 @@ export const run = (job: Job): JobRef => {
       await closeJob();
       return;
     }
-    await onStepCompleted();
+    await onStepCompleted("failed");
   };
 
   const addWorkerListeners = (): void => {
@@ -205,10 +209,10 @@ export const run = (job: Job): JobRef => {
 
       switch (true) {
         case completed:
-          await onStepCompleted();
+          await onStepCompleted("finished");
           break;
         case stopped:
-          await onStepCompleted();
+          await onStepCompleted("stopped");
           break;
         case failed:
           await onTaskError(new Error("Process failed"));

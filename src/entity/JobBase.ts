@@ -11,10 +11,13 @@ type JobStatus =
   | "stopped" // if stopped by softTimeout or by softStop request, either from scheduler side or user side
   | "waiting"; // if the job is waiting in queue
 
-type StepStatus = "failed" | "finished" | "stopped";
+export type StepStatus = "failed" | "finished" | "stopped";
 
 interface Steps {
-  [key: number]: StepStatus;
+  [key: number]: {
+    status: StepStatus;
+    sessionId: string | undefined;
+  };
 }
 
 export default class JobBase extends Base {
