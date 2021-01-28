@@ -1,16 +1,14 @@
-import { addJob, startIfAvailable } from "../job";
 import { Job as NodeSchedule, scheduledJobs, scheduleJob } from "node-schedule";
-import { checkInterval } from "../../utils/getSetting";
+import { addJob } from "../job";
 import Job from "../../entity/Job";
-import log from "../../utils/logger";
 import Schedule from "../../entity/Schedule";
 
 // TODO: check start and end date/time before adding to jobs
 export const registerSchedule = (schedule: Schedule): void => {
-  const { id, rule } = schedule;
+  const { id, rule, validFrom, validUntil } = schedule;
   scheduleJob(
     id.toString(),
-    rule,
+    { end: validUntil, rule, start: validFrom },
     async (): Promise<Job> => {
       return addJob(schedule, "scheduler");
     },
@@ -31,7 +29,7 @@ export const getScheduleRef = (id: number): NodeSchedule | undefined =>
 let schedulesRegistered = false;
 
 export const registerExistingSchedules = async (): Promise<void> => {
-  // Singleton
+  // Only run once at start
   if (schedulesRegistered) {
     return;
   }
@@ -39,12 +37,4 @@ export const registerExistingSchedules = async (): Promise<void> => {
   const schedules = await Schedule.find();
   schedules.forEach(registerSchedule);
   schedulesRegistered = true;
-
-  setInterval(async () => {
-    try {
-      await startIfAvailable();
-    } catch (error) {
-      log.error(error);
-    }
-  }, checkInterval);
 };

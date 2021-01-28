@@ -1,4 +1,5 @@
 import { JobRef, run } from "./run";
+import { checkInterval } from "../../utils/getSetting";
 import Job from "../../entity/Job";
 import log from "../../utils/logger";
 import Schedule from "../../entity/Schedule";
@@ -131,4 +132,15 @@ export const startIfAvailable = async (): Promise<void> => {
     firstRun = false;
     checking = false;
   }
+};
+
+export const startPeriodicCheck = (): NodeJS.Timeout => {
+  const interval = setInterval(async () => {
+    try {
+      await startIfAvailable();
+    } catch (error) {
+      log.error(error);
+    }
+  }, checkInterval);
+  return interval;
 };

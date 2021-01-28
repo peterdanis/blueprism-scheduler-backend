@@ -6,6 +6,7 @@ import createServer from "./utils/createServer";
 import log from "./utils/logger";
 import { registerExistingSchedules } from "./controller/schedule";
 import schedDbConfig from "./utils/connectionConfig";
+import { startPeriodicCheck } from "./controller/job";
 import { version } from "../package.json";
 
 // Print out some info
@@ -31,6 +32,7 @@ server.on("listening", async () => {
     `Connected to DB server: ${schedDbConfig.host}:${schedDbConfig.port}, database: ${schedDbConfig.database}`,
   );
   await registerExistingSchedules();
+  startPeriodicCheck();
 });
 
 server.listen(apiPort);
