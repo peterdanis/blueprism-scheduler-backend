@@ -1,9 +1,11 @@
 import { apiIP, apiPort, useHTTPS } from "./utils/getEnvVariable";
 import { AddressInfo } from "net";
 import app from "./api";
+import { createConnection } from "typeorm";
 import createServer from "./utils/createServer";
 import log from "./utils/logger";
-import { init as schedulerInit } from "./scheduler";
+import { registerExistingSchedules } from "./controller/schedule";
+import schedDbConfig from "./utils/connectionConfig";
 import { version } from "../package.json";
 
 // Print out some info
@@ -24,8 +26,11 @@ server.on("listening", async () => {
       useHTTPS ? "HTTPS" : "HTTP"
     }`,
   );
-
-  await schedulerInit();
+  await createConnection(schedDbConfig);
+  log.info(
+    `Connected to DB server: ${schedDbConfig.host}:${schedDbConfig.port}, database: ${schedDbConfig.database}`,
+  );
+  await registerExistingSchedules();
 });
 
 server.listen(apiPort);

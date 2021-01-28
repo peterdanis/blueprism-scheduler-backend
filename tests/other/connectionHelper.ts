@@ -1,5 +1,5 @@
 import { ConnectionOptions } from "typeorm";
-import schedDbConfig from "../../src/utils/connection";
+import schedDbConfig from "../../src/utils/connectionConfig";
 
 const config: ConnectionOptions = {
   ...schedDbConfig,

@@ -1,8 +1,9 @@
 import clearDatabase from "./clearDatabase";
-import { createSchedulerDBConnection } from "../../src/utils/connection";
+import { createConnection } from "typeorm";
 import dummyData from "./dummyData.json";
 import log from "../../src/utils/logger";
 import RuntimeResource from "../../src/entity/RuntimeResource";
+import schedDbConfig from "../../src/utils/connectionConfig";
 import Schedule from "../../src/entity/Schedule";
 import ScheduleTask from "../../src/entity/ScheduleTask";
 import Task from "../../src/entity/Task";
@@ -61,7 +62,7 @@ const scheduleTasks = async (): Promise<void> => {
 };
 
 export default (async () => {
-  const connection = await createSchedulerDBConnection();
+  const connection = await createConnection(schedDbConfig);
   try {
     await clearDatabase(connection);
     await connection.synchronize();
