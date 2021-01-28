@@ -21,10 +21,9 @@ axiosRetry(axios, {
   retryDelay: (retryCount) => retryCount * 30000,
 });
 
-interface CustomError extends Error {
-  data?: unknown;
-}
-
+/**
+ * Lists all possible messages from worker thread.
+ */
 export interface WorkerMessage {
   completed?: boolean;
   hardTimeoutReached?: boolean;
@@ -34,6 +33,9 @@ export interface WorkerMessage {
   failed?: boolean;
 }
 
+/**
+ * Job reference, to emit soft/hard stop events.
+ */
 export class JobRef extends EventEmitter {
   job: Job;
 
@@ -45,12 +47,18 @@ export class JobRef extends EventEmitter {
   }
 }
 
+/**
+ * Returns details of job's current task.
+ */
 export const getCurrentTask = (job: Job): ScheduleTask | undefined =>
   job.schedule.scheduleTask.sort((task1, task2) => task1.step - task2.step)[
     job.step - 1
   ];
 
-export const lastStep = (job: Job): boolean => {
+/**
+ * Return true if job.step is last one for given job.
+ */
+const isLastStep = (job: Job): boolean => {
   const currentTask = getCurrentTask(job);
   if (currentTask) {
     return currentTask.step >= job.schedule.scheduleTask.length;
@@ -96,7 +104,14 @@ export const run = (job: Job): JobRef => {
 
   const closeJob = async (failed?: boolean): Promise<void> => {
     stopping = true;
+    try {
+      await worker.terminate();
+    } catch (error) {
+      log.error(error.message);
+    }
+
     /* eslint-disable no-param-reassign */
+    job.endTime = new Date();
     switch (true) {
       case failed:
         job.status = "failed";
@@ -111,6 +126,7 @@ export const run = (job: Job): JobRef => {
         job.status = "finished";
         break;
     }
+    /* eslint-enable no-param-reassign */
     log.info("Closing job", { status: job.status });
 
     // Reset runtime resource after last step
@@ -122,18 +138,14 @@ export const run = (job: Job): JobRef => {
       log.error(error.message, { error });
     }
 
-    job.endTime = new Date();
-    /* eslint-enable no-param-reassign */
     await job.save();
 
-    try {
-      await worker.terminate();
-    } catch (error) {
-      log.error(error.message);
-    }
+    // Clear timeouts and mark job reference for deletion
     clearTimeout(jobHardStopTimer);
     clearTimeout(jobSoftStopTimer);
     jobRef.delete = true;
+
+    // Move job from active queue to log
     const jobLog = JobLog.create({
       ...job,
       jobId: job.id,
@@ -155,6 +167,7 @@ export const run = (job: Job): JobRef => {
       [job.step]: { sessionId: job.sessionId, status: stepStatus },
     };
     job.sessionId = undefined;
+    if (isLastStep(job) || jobSoftStopRequested || jobHardStopRequested) {
       await closeJob();
       return;
     }
@@ -165,7 +178,7 @@ export const run = (job: Job): JobRef => {
     runWorker();
   };
 
-  const onTaskError = async (error: CustomError): Promise<void> => {
+  const onTaskError = async (error: Error): Promise<void> => {
     log.error(error.message, { error });
 
     if (getCurrentTask(job)?.abortEarly) {
@@ -188,7 +201,7 @@ export const run = (job: Job): JobRef => {
     log.warn("stepHardStop requested");
     partialFailure = true;
     await worker.terminate();
-    if (lastStep(job)) {
+    if (isLastStep(job)) {
       await closeJob();
       return;
     }
