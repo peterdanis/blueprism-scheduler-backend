@@ -1,9 +1,5 @@
-import clearDatabase from "./clearDatabase";
-import { createConnection } from "typeorm";
 import dummyData from "./dummyData.json";
-import log from "../../src/utils/logger";
 import RuntimeResource from "../../src/entity/RuntimeResource";
-import schedDbConfig from "../../src/utils/connectionConfig";
 import Schedule from "../../src/entity/Schedule";
 import ScheduleTask from "../../src/entity/ScheduleTask";
 import Task from "../../src/entity/Task";
@@ -40,7 +36,7 @@ const schedules = async (): Promise<void> => {
     const runtimeResource = await RuntimeResource.findOne({
       where: { friendlyName: schedule.runtimeResource },
     });
-    const validFrom = new Date();
+    const validFrom = new Date("2020-12-31T20:00:00Z");
     const _schedule = Schedule.create(
       Object.assign(schedule, { runtimeResource, validFrom }),
     );
@@ -61,22 +57,10 @@ const scheduleTasks = async (): Promise<void> => {
   }
 };
 
-export default (async () => {
-  const connection = await createConnection(schedDbConfig);
-  try {
-    await clearDatabase(connection);
-    await connection.synchronize();
-
-    await users();
-    await runtimeResources();
-    await schedules();
-    await tasks();
-    await scheduleTasks();
-
-    log.info("Dummies executed");
-  } catch (error) {
-    log.error(error);
-  } finally {
-    await connection?.close();
-  }
-})();
+export default async (): Promise<void> => {
+  await users();
+  await runtimeResources();
+  await schedules();
+  await tasks();
+  await scheduleTasks();
+};

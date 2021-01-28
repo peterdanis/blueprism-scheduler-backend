@@ -1,0 +1,255 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Job has expected properties 1`] = `
+Job {
+  "addTime": 2020-12-31T20:00:00.000Z,
+  "endTime": null,
+  "id": 1,
+  "message": null,
+  "priority": 50,
+  "runtimeResource": RuntimeResource {
+    "apiKey": null,
+    "auth": "basic",
+    "friendlyName": "vm1",
+    "hostname": "vm1.something.com",
+    "https": true,
+    "id": 1,
+    "password": "p@ssword#1",
+    "port": 3000,
+    "username": "rpa",
+  },
+  "schedule": Schedule {
+    "force": false,
+    "hardForceTime": 1800000,
+    "hardTimeout": 86400000,
+    "id": 1,
+    "name": "Test schedule 1",
+    "onError": null,
+    "priority": 50,
+    "rule": "* * * * *",
+    "runtimeResource": RuntimeResource {
+      "apiKey": null,
+      "auth": "basic",
+      "friendlyName": "vm1",
+      "hostname": "vm1.something.com",
+      "https": true,
+      "id": 1,
+      "password": "p@ssword#1",
+      "port": 3000,
+      "username": "rpa",
+    },
+    "scheduleTask": Array [
+      ScheduleTask {
+        "abortEarly": true,
+        "delayAfter": 0,
+        "id": 4,
+        "onError": null,
+        "step": 2,
+        "task": Task {
+          "hardTimeout": 150000,
+          "id": 2,
+          "inputs": Array [
+            Object {
+              "@name": "Time to run",
+              "@type": "text",
+              "@value": "120",
+            },
+          ],
+          "name": "Test process 2mins",
+          "process": "Test process",
+          "softTimeout": 150000,
+        },
+      },
+      ScheduleTask {
+        "abortEarly": true,
+        "delayAfter": 0,
+        "id": 7,
+        "onError": null,
+        "step": 3,
+        "task": Task {
+          "hardTimeout": 350000,
+          "id": 3,
+          "inputs": Array [
+            Object {
+              "@name": "Time to run",
+              "@type": "text",
+              "@value": "300",
+            },
+          ],
+          "name": "Test process 5mins",
+          "process": "Test process",
+          "softTimeout": 350000,
+        },
+      },
+      ScheduleTask {
+        "abortEarly": true,
+        "delayAfter": 30000,
+        "id": 1,
+        "onError": null,
+        "step": 1,
+        "task": Task {
+          "hardTimeout": 100000,
+          "id": 1,
+          "inputs": null,
+          "name": "Login",
+          "process": "Login",
+          "softTimeout": 100000,
+        },
+      },
+    ],
+    "softForceTime": 900000,
+    "softTimeout": 86400000,
+    "validFrom": 2020-12-31T20:00:00.000Z,
+    "validUntil": 9999-12-31T00:00:00.000Z,
+    "waitTime": 86400000,
+  },
+  "sessionId": null,
+  "startReason": "test",
+  "startTime": null,
+  "status": "waiting",
+  "step": 1,
+  "steps": null,
+  "stopReason": null,
+  "subStep": 1,
+  "updateTime": 2020-12-31T20:00:00.000Z,
+}
+`;
+
+exports[`RuntimeResource has expected properties 1`] = `
+RuntimeResource {
+  "apiKey": null,
+  "auth": "basic",
+  "friendlyName": "vm1",
+  "hostname": "vm1.something.com",
+  "https": true,
+  "id": 1,
+  "password": "p@ssword#1",
+  "port": 3000,
+  "username": "rpa",
+}
+`;
+
+exports[`Schedule has expected properties 1`] = `
+Schedule {
+  "force": false,
+  "hardForceTime": 1800000,
+  "hardTimeout": 86400000,
+  "id": 1,
+  "name": "Test schedule 1",
+  "onError": null,
+  "priority": 50,
+  "rule": "* * * * *",
+  "runtimeResource": RuntimeResource {
+    "apiKey": null,
+    "auth": "basic",
+    "friendlyName": "vm1",
+    "hostname": "vm1.something.com",
+    "https": true,
+    "id": 1,
+    "password": "p@ssword#1",
+    "port": 3000,
+    "username": "rpa",
+  },
+  "scheduleTask": Array [
+    ScheduleTask {
+      "abortEarly": true,
+      "delayAfter": 0,
+      "id": 4,
+      "onError": null,
+      "step": 2,
+      "task": Task {
+        "hardTimeout": 150000,
+        "id": 2,
+        "inputs": Array [
+          Object {
+            "@name": "Time to run",
+            "@type": "text",
+            "@value": "120",
+          },
+        ],
+        "name": "Test process 2mins",
+        "process": "Test process",
+        "softTimeout": 150000,
+      },
+    },
+    ScheduleTask {
+      "abortEarly": true,
+      "delayAfter": 0,
+      "id": 7,
+      "onError": null,
+      "step": 3,
+      "task": Task {
+        "hardTimeout": 350000,
+        "id": 3,
+        "inputs": Array [
+          Object {
+            "@name": "Time to run",
+            "@type": "text",
+            "@value": "300",
+          },
+        ],
+        "name": "Test process 5mins",
+        "process": "Test process",
+        "softTimeout": 350000,
+      },
+    },
+    ScheduleTask {
+      "abortEarly": true,
+      "delayAfter": 30000,
+      "id": 1,
+      "onError": null,
+      "step": 1,
+      "task": Task {
+        "hardTimeout": 100000,
+        "id": 1,
+        "inputs": null,
+        "name": "Login",
+        "process": "Login",
+        "softTimeout": 100000,
+      },
+    },
+  ],
+  "softForceTime": 900000,
+  "softTimeout": 86400000,
+  "validFrom": 2020-12-31T20:00:00.000Z,
+  "validUntil": 9999-12-31T00:00:00.000Z,
+  "waitTime": 86400000,
+}
+`;
+
+exports[`ScheduleTask has expected properties 1`] = `
+ScheduleTask {
+  "abortEarly": true,
+  "delayAfter": 30000,
+  "id": 1,
+  "onError": null,
+  "step": 1,
+  "task": Task {
+    "hardTimeout": 100000,
+    "id": 1,
+    "inputs": null,
+    "name": "Login",
+    "process": "Login",
+    "softTimeout": 100000,
+  },
+}
+`;
+
+exports[`Task has expected properties 1`] = `
+Task {
+  "hardTimeout": 100000,
+  "id": 1,
+  "inputs": null,
+  "name": "Login",
+  "process": "Login",
+  "softTimeout": 100000,
+}
+`;
+
+exports[`User has expected properties 1`] = `
+User {
+  "admin": false,
+  "id": 1,
+  "name": "testuser",
+}
+`;
