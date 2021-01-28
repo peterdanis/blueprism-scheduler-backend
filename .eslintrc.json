@@ -83,31 +83,32 @@
     ]
   },
   "settings": {
-    "react": {
-      "pragma": "React",
-      "version": "detect"
-    },
     "import/resolver": {
       "node": {
         "extensions": [".js", ".jsx", ".ts", ".tsx"]
       }
-    },
-    "import/core-modules": ["electron"]
+    }
   },
   "parser": "@typescript-eslint/parser",
   "env": {
-    "browser": true,
     "node": true
   },
   "overrides": [
     {
-      "files": ["**/mocks/*.js", "**/*.spec.js", "**/*.test.js"],
+      "files": ["./tests/**/*"],
       "env": {
         "jest": true
       },
       "rules": {
-        "global-require": "off"
+        "global-require": "off",
+        "@typescript-eslint/ban-ts-comment": "off"
       }
     }
+  ],
+  "ignorePatterns": [
+    "**/migration/**/*",
+    "/build/**/*",
+    "/pre-build/**/*",
+    "/src/controller/job/runWorker.js"
   ]
 }
