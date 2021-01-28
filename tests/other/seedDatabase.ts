@@ -1,12 +1,12 @@
 import clearDatabase from "./clearDatabase";
-import { createSchedulerDBConnection } from "../src/utils/connection";
+import { createSchedulerDBConnection } from "../../src/utils/connection";
 import dummyData from "./dummyData.json";
-import log from "../src/utils/logger";
-import RuntimeResource from "../src/entity/RuntimeResource";
-import Schedule from "../src/entity/Schedule";
-import ScheduleTask from "../src/entity/ScheduleTask";
-import Task from "../src/entity/Task";
-import User from "../src/entity/User";
+import log from "../../src/utils/logger";
+import RuntimeResource from "../../src/entity/RuntimeResource";
+import Schedule from "../../src/entity/Schedule";
+import ScheduleTask from "../../src/entity/ScheduleTask";
+import Task from "../../src/entity/Task";
+import User from "../../src/entity/User";
 
 /* eslint-disable no-await-in-loop */
 /* eslint-disable no-restricted-syntax */

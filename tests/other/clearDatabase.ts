@@ -1,5 +1,5 @@
 import { Connection } from "typeorm";
-import log from "../src/utils/logger";
+import log from "../../src/utils/logger";
 import retry from "async-retry";
 
 export default async (connection: Connection): Promise<void> => {
