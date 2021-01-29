@@ -8,7 +8,7 @@ import {
 } from "./getEnvVariable";
 import Job from "../entity/Job";
 import JobLog from "../entity/JobLog";
-import { migration1611605973590 } from "../migration/1611605973590-migration";
+import path from "path";
 import RuntimeResource from "../entity/RuntimeResource";
 import Schedule from "../entity/Schedule";
 import ScheduleTask from "../entity/ScheduleTask";
@@ -17,13 +17,15 @@ import Task from "../entity/Task";
 import typeOrmLogger from "./typeOrmLogger";
 import User from "../entity/User";
 
+const migrationDir = path.join(__dirname, "..", "migration");
+
 const schedDbConfig: SqlServerConnectionOptions = {
   cli: { migrationsDir: "/src/migration/" },
   database: dbName,
   entities: [Job, JobLog, RuntimeResource, Schedule, ScheduleTask, Task, User],
   host: dbHost,
   logger: typeOrmLogger,
-  migrations: [migration1611605973590],
+  migrations: [`${migrationDir}/*`],
   migrationsRun: true,
   options: { enableArithAbort: true },
   password: dbPassword,

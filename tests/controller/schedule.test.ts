@@ -3,7 +3,7 @@ import {
   getScheduleRef,
   registerExistingSchedules,
 } from "../../src/controller/schedule";
-import config from "../testUtils/connectionHelper";
+import config from "../testUtils/testConnectionConfig";
 import { install } from "@sinonjs/fake-timers";
 import loadDummies from "../testUtils/loadDummies";
 import { scheduledJobs } from "node-schedule";

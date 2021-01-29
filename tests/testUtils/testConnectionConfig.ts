@@ -3,11 +3,12 @@ import schedDbConfig from "../../src/utils/connectionConfig";
 
 const config: ConnectionOptions = {
   ...schedDbConfig,
+  cli: { migrationsDir: "./tests/testUtils/migration/" },
   database: ":memory:",
   logger: "simple-console",
   logging: false,
-  migrations: [],
-  synchronize: true,
+  migrations: ["./tests/testUtils/migration/*"],
+  migrationsRun: true,
   type: "sqlite",
 };
 

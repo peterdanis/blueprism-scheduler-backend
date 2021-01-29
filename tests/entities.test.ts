@@ -1,5 +1,5 @@
 import { Connection, createConnection } from "typeorm";
-import config from "./testUtils/connectionHelper";
+import config from "./testUtils/testConnectionConfig";
 import Job from "../src/entity/Job";
 import loadDummies from "./testUtils/loadDummies";
 import RuntimeResource from "../src/entity/RuntimeResource";
