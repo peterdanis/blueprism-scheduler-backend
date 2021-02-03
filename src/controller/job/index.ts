@@ -2,6 +2,7 @@ import { JobRef, run } from "./run";
 import { checkInterval } from "../../utils/getSetting";
 import Job from "../../entity/Job";
 import log from "../../utils/logger";
+import retry from "../../utils/retry";
 import Schedule from "../../entity/Schedule";
 
 let checking = false;
@@ -73,7 +74,7 @@ export const addJob = async (
     rule,
     scheduleId: id,
   });
-  return job.save();
+  return retry(() => job.save());
 };
 
 export const getJobs = async (
@@ -118,9 +119,8 @@ export const startIfAvailable = async (): Promise<void> => {
         if (job) {
           job.status = "running";
           job.startTime = new Date();
-          // eslint-disable-next-line no-await-in-loop
-          await job.save();
-          // Do not await the result
+          // eslint-disable-next-line @typescript-eslint/no-non-null-assertion, no-await-in-loop
+          await retry(() => job!.save());
           const jobRef = run(job);
           runningJobRef.push(jobRef);
         }

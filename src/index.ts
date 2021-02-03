@@ -5,6 +5,7 @@ import { createConnection } from "typeorm";
 import createServer from "./utils/createServer";
 import log from "./utils/logger";
 import { registerExistingSchedules } from "./controller/schedule";
+import retry from "./utils/retry";
 import schedDbConfig from "./utils/connectionConfig";
 import { startPeriodicCheck } from "./controller/job";
 import { version } from "../package.json";
@@ -27,7 +28,7 @@ server.on("listening", async () => {
       useHTTPS ? "HTTPS" : "HTTP"
     }`,
   );
-  await createConnection(schedDbConfig);
+  await retry(() => createConnection(schedDbConfig));
   log.info(
     `Connected to DB server: ${schedDbConfig.host}:${schedDbConfig.port}, database: ${schedDbConfig.database}`,
   );

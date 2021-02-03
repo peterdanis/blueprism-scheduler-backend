@@ -38,6 +38,7 @@ Scheduler sends instruction which process to run and when via HTTP/HTTPS to API 
 - [ ] send email on error, customizable per schedule
 - [x] run from executable on Windows (via https://github.com/vercel/pkg)
 - [x] register as service on Windows (via https://github.com/winsw/winsw)
+- [x] handle short network or SQL server outages
 
 ### Nice to have
 

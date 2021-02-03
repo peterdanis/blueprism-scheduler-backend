@@ -1,4 +1,3 @@
-import axiosRetry, { isNetworkOrIdempotentRequestError } from "axios-retry";
 import { getHeader, getUrl } from "../../utils/getUrlAndHeader";
 import axios from "axios";
 import { EventEmitter } from "events";
@@ -6,20 +5,10 @@ import Job from "../../entity/Job";
 import JobLog from "../../entity/JobLog";
 import logger from "../../utils/logger";
 import path from "path";
+import retry from "../../utils/retry";
 import ScheduleTask from "../../entity/ScheduleTask";
 import { StepStatus } from "../../entity/JobBase";
 import { Worker } from "worker_threads";
-
-axiosRetry(axios, {
-  retries: 3,
-  retryCondition: (error) => {
-    if (error.response?.status === 503) {
-      return true;
-    }
-    return isNetworkOrIdempotentRequestError(error);
-  },
-  retryDelay: (retryCount) => retryCount * 30000,
-});
 
 /**
  * Lists all possible messages from worker thread.
@@ -71,7 +60,8 @@ const isLastStep = (job: Job): boolean => {
  *
  * @returns reference to job, to be able to stop it from outside.
  */
-export const run = (job: Job): JobRef => {
+export const run = (_job: Job): JobRef => {
+  const job = _job;
   const log = logger.child({ jobId: job.id });
 
   const { schedule, runtimeResource } = job;
@@ -95,10 +85,14 @@ export const run = (job: Job): JobRef => {
   const sendStop = async (): Promise<void> => {
     log.info("Running stop");
     try {
-      // will retry via axios-retry
-      await axios.post(getUrl(job, "stop"), {}, getHeader(job));
+      if (job.sessionId) {
+        await retry(() => axios.post(getUrl(job, "stop"), {}, getHeader(job)));
+      } else {
+        throw new Error("sessionId is not defined, can't stop this step");
+      }
     } catch (error) {
       log.error(error.message, { error: error.response.data });
+      throw error;
     }
   };
 
@@ -110,7 +104,6 @@ export const run = (job: Job): JobRef => {
       log.error(error.message);
     }
 
-    /* eslint-disable no-param-reassign */
     job.endTime = new Date();
     switch (true) {
       case failed:
@@ -126,19 +119,17 @@ export const run = (job: Job): JobRef => {
         job.status = "finished";
         break;
     }
-    /* eslint-enable no-param-reassign */
     log.info("Closing job", { status: job.status });
 
     // Reset runtime resource after last step
     try {
       log.info("Post reset");
-      // will retry via axios-retry
-      await axios.post(getUrl(job, "reset"), {}, getHeader(job));
+      await retry(() => axios.post(getUrl(job, "reset"), {}, getHeader(job)));
     } catch (error) {
       log.error(error.message, { error });
     }
 
-    await job.save();
+    await retry(() => job.save());
 
     // Clear timeouts and mark job reference for deletion
     clearTimeout(jobHardStopTimer);
@@ -152,8 +143,8 @@ export const run = (job: Job): JobRef => {
       runtimeResourceId: runtimeResource.id,
       scheduleId: schedule.id,
     });
-    await jobLog.save();
-    await job.remove();
+    await retry(() => jobLog.save());
+    await retry(() => job.remove());
   };
 
   const runWorker = (): void => {
@@ -161,7 +152,6 @@ export const run = (job: Job): JobRef => {
   };
 
   const onStepCompleted = async (stepStatus: StepStatus): Promise<void> => {
-    /* eslint-disable no-param-reassign */
     job.steps = {
       ...job.steps,
       [job.step]: { sessionId: job.sessionId, status: stepStatus },
@@ -173,8 +163,7 @@ export const run = (job: Job): JobRef => {
     }
     job.step++;
     job.subStep = 1;
-    await job.save();
-    /* eslint-enable no-param-reassign */
+    await retry(() => job.save());
     runWorker();
   };
 
@@ -194,7 +183,11 @@ export const run = (job: Job): JobRef => {
   const stepSoftStop = async (): Promise<void> => {
     log.warn("stepSoftStop requested");
     partialFailure = true;
-    await sendStop();
+    try {
+      await sendStop();
+    } catch (error) {
+      await onStepCompleted("failed");
+    }
   };
 
   const stepHardStop = async (): Promise<void> => {
@@ -237,11 +230,9 @@ export const run = (job: Job): JobRef => {
           await stepSoftStop();
           break;
         case !!sessionId:
-          /* eslint-disable no-param-reassign */
           job.subStep++;
           job.sessionId = sessionId;
-          /* eslint-enable no-param-reassign */
-          await job.save();
+          await retry(() => job.save());
           break;
         default:
           log.error("Unknown message");
@@ -266,10 +257,6 @@ export const run = (job: Job): JobRef => {
   jobRef.on("jobSoftStop", async (user: string) => {
     log.warn("jobSoftStop requested", { user });
     jobSoftStopRequested = true;
-    if (job.subStep === 1) {
-      await closeJob();
-      return;
-    }
     await stepSoftStop();
   });
 

@@ -8,8 +8,6 @@ const options: Options = {
   retries: 20,
 };
 
-type Retry = <T>(fn: () => Promise<T>) => Promise<void | T>;
-
 /**
  * Retry for async functions, with predefined parameters.
  * In case of axios request - don't retry if the response code is 3xx or 4xx, unless its a "429 Too Many Requests" response.
@@ -18,7 +16,7 @@ type Retry = <T>(fn: () => Promise<T>) => Promise<void | T>;
  * const users = await retry(() => User.find());
  */
 
-const retry: Retry = async (fn) => {
+const retry = async <T>(fn: () => Promise<T>): Promise<T> => {
   return asyncRetry(async (bail) => {
     try {
       return await fn();
@@ -29,7 +27,7 @@ const retry: Retry = async (fn) => {
         error.response.status < 500 &&
         error.response.status !== 429
       ) {
-        return bail(error);
+        return (bail(error) as unknown) as T;
       }
       throw error;
     }
