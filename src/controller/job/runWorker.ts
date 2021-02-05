@@ -101,7 +101,7 @@ parentPort!.on("message", messageHandler);
 // Rethrow to be catched by worker.on("error") handler
 process.on("unhandledRejection", (error: AxiosError) => {
   if (error.response) {
-    throw new Error(`${error.message}. ${error.response.data}`);
+    throw new Error(`${error.message}. ${error.response.data.error}`);
   }
   throw error;
 });
