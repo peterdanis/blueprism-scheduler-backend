@@ -15,7 +15,7 @@
     "lint": "eslint .",
     "migration-generate": "node --require ts-node/register ./node_modules/typeorm/cli.js migration:generate -n migration -f ./src/utils/connectionConfig.ts & node --require ts-node/register ./node_modules/typeorm/cli.js migration:generate -n migration -f ./tests/testUtils/testConnectionConfig.ts",
     "prebuild": "rmdir /Q /S build & rmdir /Q /S pre-build & tsc",
-    "seedDB": "ts-node ./tests/seedDatabase.ts",
+    "seedDB": "ts-node ./tests/testUtils/seedDatabase.ts",
     "start": "ts-node ./src/index.ts",
     "test-cover": "jest --coverage --noStackTrace",
     "test-watch": "jest --watch --noStackTrace",
