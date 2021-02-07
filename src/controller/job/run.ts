@@ -2,12 +2,12 @@ import { getHeader, getUrl } from "../../utils/getUrlAndHeader";
 import axios from "axios";
 import { EventEmitter } from "events";
 import Job from "../../entity/Job";
-import JobLog from "../../entity/JobLog";
 import logger from "../../utils/logger";
 import path from "path";
 import retry from "../../utils/retry";
 import ScheduleTask from "../../entity/ScheduleTask";
 import { StepStatus } from "../../entity/JobBase";
+import { transferJob } from "../jobLog";
 import { Worker } from "worker_threads";
 
 /**
@@ -64,7 +64,7 @@ export const run = (_job: Job): JobRef => {
   const job = _job;
   const log = logger.child({ jobId: job.id });
 
-  const { schedule, runtimeResource } = job;
+  const { schedule } = job;
   let jobHardStopRequested = false;
   let jobSoftStopRequested = false;
   let partialFailure = false;
@@ -131,20 +131,13 @@ export const run = (_job: Job): JobRef => {
 
     await retry(() => job.save());
 
-    // Clear timeouts and mark job reference for deletion
+    // Clear timeouts
     clearTimeout(jobHardStopTimer);
     clearTimeout(jobSoftStopTimer);
-    jobRef.delete = true;
 
-    // Move job from active queue to log
-    const jobLog = JobLog.create({
-      ...job,
-      jobId: job.id,
-      runtimeResourceId: runtimeResource.id,
-      scheduleId: schedule.id,
-    });
-    await retry(() => jobLog.save());
-    await retry(() => job.remove());
+    // Move job from active queue to log and mark job reference for deletion
+    await transferJob(job, "Transferred by scheduler");
+    jobRef.delete = true;
   };
 
   const runWorker = (): void => {
