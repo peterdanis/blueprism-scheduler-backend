@@ -9,7 +9,12 @@ import retry from "../../utils/retry";
 import ScheduleTask from "../../entity/ScheduleTask";
 import sleep from "../../utils/sleep";
 
-type Status = "Completed" | "Running" | "Stopped" | "Stopping" | "Terminated";
+type Status =
+  | "Completed"
+  | "Running"
+  | "Stopped"
+  | "StopRequested"
+  | "Terminated";
 
 const sessionIdRegexp = new RegExp(/^\w{8}-\w{4}-\w{4}-\w{4}-\w{12}$/);
 
@@ -36,7 +41,7 @@ const checkStatus = async (job: Job): Promise<Status | unknown> => {
   let status: Status = "Running";
 
   /* eslint-disable no-await-in-loop */
-  while (status === "Running" || status === "Stopping") {
+  while (status === "Running" || status === "StopRequested") {
     await sleep(recheckDelay);
     const { data } = await retry(() => axios.get(url, header));
     status = data.status;
