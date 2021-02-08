@@ -1,0 +1,11 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`User add new user 1`] = `
+Array [
+  User {
+    "admin": false,
+    "id": 1,
+    "name": "testUser",
+  },
+]
+`;
