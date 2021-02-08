@@ -1,4 +1,4 @@
-import User from "../../entity/User";
+import User from "../entity/User";
 
 export const addUser = async (name: string): Promise<User> => {
   const user = User.create({ name });

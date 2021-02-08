@@ -21,7 +21,7 @@ afterAll(async () => {
 });
 
 describe("Scheduler", () => {
-  test("will register valid schedue", async () => {
+  test("will register valid schedule", async () => {
     const clock = install({
       now: new Date("2021-01-20T02:00:00Z"),
     });
