@@ -8,6 +8,8 @@ import { install } from "@sinonjs/fake-timers";
 import loadDummies from "../testUtils/loadDummies";
 import { scheduledJobs } from "node-schedule";
 
+jest.mock("../../src/utils/logger");
+
 let connection: Connection;
 
 beforeAll(async () => {

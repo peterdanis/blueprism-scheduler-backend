@@ -10,7 +10,7 @@ export const transferJob = async (
   const { id, schedule, runtimeResource } = job;
   const jobLog = JobLog.create({
     ...job,
-    // id: undefined,
+    id: undefined,
     jobId: id,
     message,
     runtimeResourceId: runtimeResource.id,
