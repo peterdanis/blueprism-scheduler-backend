@@ -10,13 +10,14 @@ export const transferJob = async (
   const { id, schedule, runtimeResource } = job;
   const jobLog = JobLog.create({
     ...job,
+    // id: undefined,
     jobId: id,
     message,
     runtimeResourceId: runtimeResource.id,
     scheduleId: schedule.id,
   });
   await retry(() => jobLog.save());
-  log.info("Job transferred", { job, jobLog });
+  log.info("Job transferred", { jobId: id, jobLogId: jobLog.id });
   await retry(() => job.remove());
   return jobLog;
 };
