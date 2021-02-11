@@ -20,7 +20,7 @@ interface Steps {
   };
 }
 
-export default class JobBase extends Base {
+export default abstract class JobBase extends Base {
   @Column()
   addTime!: Date;
 
@@ -31,7 +31,7 @@ export default class JobBase extends Base {
   message?: string;
 
   @Column({ default: defaultPriority })
-  priority!: number; // De-normalized priority field - to by able to get the queued schedule higher or lower priority
+  priority!: number; // De-normalized priority field - to by able to change priority
 
   @Column({ nullable: true })
   sessionId?: string;
