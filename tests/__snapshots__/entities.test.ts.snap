@@ -251,5 +251,6 @@ User {
   "admin": false,
   "id": 1,
   "name": "testuser",
+  "password": "testpassword",
 }
 `;

@@ -6,6 +6,7 @@ Array [
     "admin": false,
     "id": 1,
     "name": "testUser",
+    "password": "$2b$10$wNSddHlUh3CBnrIv89UwruhKYY/fbMXDn944DvSMurQCleby/9Bqe",
   },
 ]
 `;

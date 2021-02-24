@@ -8,4 +8,7 @@ export default class User extends Base {
 
   @Column({ unique: true })
   name!: string;
+
+  @Column()
+  password!: string;
 }
