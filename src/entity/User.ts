@@ -6,6 +6,9 @@ export default class User extends Base {
   @Column({ nullable: true })
   apiKey!: string;
 
+  @Column({ nullable: true })
+  apiKeyHash!: string;
+
   @Column({ default: false })
   admin!: boolean;
 

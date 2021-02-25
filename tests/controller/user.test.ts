@@ -1,4 +1,10 @@
-import { addUser, generateApiKey, verify } from "../../src/controller/user";
+import {
+  addUser,
+  changePassword,
+  generateApiKey,
+  verifyApiKey,
+  verifyPassword,
+} from "../../src/controller/user";
 import { Connection, createConnection } from "typeorm";
 import config from "../testUtils/testConnectionConfig";
 import User from "../../src/entity/User";
@@ -24,10 +30,20 @@ test("Regenerating API key returns new and correct API key", async () => {
   const [user] = await User.find();
   const oldApiKey = await generateApiKey(user!.name);
   const newApiKey = await generateApiKey(user!.name);
-  const oldKeyMatch = await verify(oldApiKey, testUserName, "apiKey");
-  const newKeyMatch = await verify(newApiKey, testUserName, "apiKey");
-  expect(oldKeyMatch).toBeFalsy();
-  expect(newKeyMatch).toBeTruthy();
+  const oldKeyMatch = await verifyApiKey(oldApiKey);
+  const newKeyMatch = await verifyApiKey(newApiKey);
+  expect(oldKeyMatch).toBeUndefined();
+  expect(newKeyMatch).toBeInstanceOf(User);
+});
+
+test("Password can be changed", async () => {
+  const [user] = await User.find();
+  const newPassword = "newPassword";
+  await changePassword(user!.name, newPassword);
+  const oldPasswordMatch = await verifyPassword(user!.name, testPassword);
+  const newPasswordMatch = await verifyPassword(user!.name, newPassword);
+  expect(oldPasswordMatch).toBeUndefined();
+  expect(newPasswordMatch).toBeInstanceOf(User);
 });
 
 test("Username must be unique", async () => {

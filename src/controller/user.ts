@@ -7,6 +7,9 @@ const saltRounds = 10;
 
 let userCache: User[] | undefined;
 
+const generateHash = (string: string): string =>
+  createHash("sha256").update(string).digest("base64");
+
 export const addUser = async (
   name: string,
   password: string,
@@ -41,8 +44,13 @@ export const generateApiKey = async (name: string): Promise<string> => {
   if (!user) {
     throw new Error("No user found");
   }
-  const apiKey = createHash("sha256").update(uuid()).digest("base64");
+
+  const apiKey = (generateHash(uuid()) + generateHash(uuid())).slice(
+    0,
+    20 + Math.random() * 100,
+  );
   user.apiKey = await hash(apiKey, saltRounds);
+  user.apiKeyHash = generateHash(apiKey);
   await updateUser(user);
   return apiKey;
 };
@@ -53,15 +61,41 @@ export const deleteUser = async (id: number): Promise<User | undefined> => {
   return user?.remove();
 };
 
-export const verify = async (
-  secret: string,
+export const verifyPassword = async (
   name: string,
-  type: "password" | "apiKey",
-): Promise<boolean> => {
+  secret: string,
+): Promise<User | undefined> => {
   const user = await getUser(name);
   if (user) {
-    const storedSecret = type === "password" ? user.password : user.apiKey;
-    return compare(secret, storedSecret);
+    const match = await compare(secret, user.password);
+    return match ? user : undefined;
   }
-  return false;
+  return undefined;
+};
+
+export const verifyApiKey = async (
+  secret: string,
+): Promise<User | undefined> => {
+  const users = await getUsers();
+  const [user] = users.filter(({ apiKey, apiKeyHash }) => {
+    if (apiKeyHash === generateHash(secret)) {
+      return compare(secret, apiKey);
+    }
+  });
+  if (user) {
+    return user;
+  }
+  return undefined;
+};
+
+export const changePassword = async (
+  name: string,
+  password: string,
+): Promise<void> => {
+  const user = await getUser(name);
+  if (!user) {
+    throw new Error("No user found");
+  }
+  user.password = await hash(password, saltRounds);
+  await updateUser(user);
 };
