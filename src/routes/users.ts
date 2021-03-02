@@ -26,7 +26,7 @@ router.post("/", async (req, res, next) => {
       );
     }
     const user = await addUser(name, password);
-    res.status(200).json(user);
+    res.status(201).json(user);
   } catch (error) {
     next(error);
   }
@@ -36,8 +36,11 @@ router.get("/:userId", async (req, res, next) => {
   try {
     const { userId } = req.params;
     let user: User | undefined;
-    if (userId && !Number.isNaN(userId)) {
-      user = await getUser(parseInt(userId, 10));
+    if (userId) {
+      const parsedId = parseInt(userId, 10);
+      if (Number.isInteger(parsedId)) {
+        user = await getUser(parsedId);
+      }
     }
     if (!user) {
       throw new CustomError("User not found", 404);
