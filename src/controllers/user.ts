@@ -28,9 +28,16 @@ export const getUsers = async (): Promise<User[]> => {
   return userCache;
 };
 
-export const getUser = async (name: string): Promise<User | undefined> => {
+export const getUser = async (
+  nameOrId: string | number,
+): Promise<User | undefined> => {
   const users = await getUsers();
-  const [user] = users.filter((_user) => _user.name === name);
+  const [user] = users.filter((_user) => {
+    if (typeof nameOrId === "string") {
+      return _user.name === nameOrId;
+    }
+    return _user.id === nameOrId;
+  });
   return user;
 };
 
@@ -81,6 +88,7 @@ export const verifyApiKey = async (
     if (apiKeyHash === generateHash(secret)) {
       return compare(secret, apiKey);
     }
+    return false;
   });
   if (user) {
     return user;
@@ -89,10 +97,10 @@ export const verifyApiKey = async (
 };
 
 export const changePassword = async (
-  name: string,
+  nameOrId: string | number,
   password: string,
 ): Promise<void> => {
-  const user = await getUser(name);
+  const user = await getUser(nameOrId);
   if (!user) {
     throw new Error("No user found");
   }

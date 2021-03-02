@@ -2,6 +2,7 @@ import {
   addUser,
   changePassword,
   generateApiKey,
+  getUser,
   verifyApiKey,
   verifyPassword,
 } from "../../src/controllers/user";
@@ -44,6 +45,12 @@ test("Password can be changed", async () => {
   const newPasswordMatch = await verifyPassword(user!.name, newPassword);
   expect(oldPasswordMatch).toBeUndefined();
   expect(newPasswordMatch).toBeInstanceOf(User);
+});
+
+test("User can by found by id or name", async () => {
+  const userByName = await getUser(testUserName);
+  const userById = await getUser(1);
+  expect(userByName).toBe(userById);
 });
 
 test("Username must be unique", async () => {
