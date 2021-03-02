@@ -1,11 +1,9 @@
+import CustomError from "./utils/customError";
 import express from "express";
-// const miscRouter = require("./routes/misc");
-// const setupAuth = require("./utils/auth");
-// const setupLog = require("./utils/logging");
-
-interface CustomError extends Error {
-  statusCode: number;
-}
+import jobsRouter from "./routes/jobs";
+import path from "path";
+import schedulesRouter from "./routes/schedules";
+import usersRouter from "./routes/users";
 
 const app = express();
 
@@ -22,22 +20,20 @@ app.disable("x-powered-by");
 // Use JSON middleware
 app.use(express.json());
 
-// Route handlers
-// app.use("/", miscRouter);
-// app.use("/processes", processesRouter);
+// Serve static files from the React app
+app.use(express.static(path.join("webapp")));
 
-// 404 handler
-app.use("*", (req, res, next) => {
-  if (req.baseUrl.match(/\/api-spec/)) {
-    next();
-  } else {
-    res.status(404);
-    next("Not Found");
-  }
+// Route handlers
+app.use("/api/jobs", jobsRouter);
+app.use("/api/schedules", schedulesRouter);
+app.use("/api/users", usersRouter);
+
+// Route everything else to React app
+app.get("*", (req, res) => {
+  res.sendFile(path.join("webapp", "index.html"));
 });
 
 // Error handler
-
 app.use(
   (
     error: CustomError,
