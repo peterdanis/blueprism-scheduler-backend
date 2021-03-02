@@ -6,21 +6,21 @@ import {
   dbPort,
   dbUsername,
 } from "./getEnvVariable";
-import Job from "../entity/Job";
-import JobLog from "../entity/JobLog";
+import Job from "../entities/Job";
+import JobLog from "../entities/JobLog";
 import path from "path";
-import RuntimeResource from "../entity/RuntimeResource";
-import Schedule from "../entity/Schedule";
-import ScheduleTask from "../entity/ScheduleTask";
+import RuntimeResource from "../entities/RuntimeResource";
+import Schedule from "../entities/Schedule";
+import ScheduleTask from "../entities/ScheduleTask";
 import { SqlServerConnectionOptions } from "typeorm/driver/sqlserver/SqlServerConnectionOptions";
-import Task from "../entity/Task";
+import Task from "../entities/Task";
 import typeOrmLogger from "./typeOrmLogger";
-import User from "../entity/User";
+import User from "../entities/User";
 
-const migrationDir = path.join(__dirname, "..", "migration");
+const migrationDir = path.join(__dirname, "..", "migrations");
 
 const schedDbConfig: SqlServerConnectionOptions = {
-  cli: { migrationsDir: "/src/migration/" },
+  cli: { migrationsDir: "/src/migrations/" },
   database: dbName,
   entities: [Job, JobLog, RuntimeResource, Schedule, ScheduleTask, Task, User],
   host: dbHost,

@@ -1,5 +1,5 @@
-import Job from "../entity/Job";
-import JobLog from "../entity/JobLog";
+import Job from "../entities/Job";
+import JobLog from "../entities/JobLog";
 import log from "../utils/logger";
 import retry from "../utils/retry";
 

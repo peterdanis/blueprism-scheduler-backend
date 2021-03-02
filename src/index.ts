@@ -4,10 +4,10 @@ import app from "./api";
 import { createConnection } from "typeorm";
 import createServer from "./utils/createServer";
 import log from "./utils/logger";
-import { registerExistingSchedules } from "./controller/schedule";
+import { registerExistingSchedules } from "./controllers/schedule";
 import retry from "./utils/retry";
 import schedDbConfig from "./utils/connectionConfig";
-import { startPeriodicCheck } from "./controller/job";
+import { startPeriodicCheck } from "./controllers/job";
 import { version } from "../package.json";
 
 // Print out some info

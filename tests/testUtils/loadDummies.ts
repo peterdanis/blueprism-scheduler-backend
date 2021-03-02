@@ -1,9 +1,9 @@
 import dummyData from "./dummyData.json";
-import RuntimeResource from "../../src/entity/RuntimeResource";
-import Schedule from "../../src/entity/Schedule";
-import ScheduleTask from "../../src/entity/ScheduleTask";
-import Task from "../../src/entity/Task";
-import User from "../../src/entity/User";
+import RuntimeResource from "../../src/entities/RuntimeResource";
+import Schedule from "../../src/entities/Schedule";
+import ScheduleTask from "../../src/entities/ScheduleTask";
+import Task from "../../src/entities/Task";
+import User from "../../src/entities/User";
 
 /* eslint-disable no-await-in-loop */
 /* eslint-disable no-restricted-syntax */

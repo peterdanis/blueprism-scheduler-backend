@@ -1,7 +1,7 @@
 import { Job as NodeSchedule, scheduledJobs, scheduleJob } from "node-schedule";
 import { addJob } from "./job";
-import Job from "../entity/Job";
-import Schedule from "../entity/Schedule";
+import Job from "../entities/Job";
+import Schedule from "../entities/Schedule";
 
 // TODO: check start and end date/time before adding to jobs
 export const registerSchedule = (schedule: Schedule): void => {

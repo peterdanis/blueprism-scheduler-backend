@@ -1,12 +1,12 @@
 import { getHeader, getUrl } from "../../utils/getUrlAndHeader";
 import axios from "axios";
 import { EventEmitter } from "events";
-import Job from "../../entity/Job";
+import Job from "../../entities/Job";
 import logger from "../../utils/logger";
 import path from "path";
 import retry from "../../utils/retry";
-import ScheduleTask from "../../entity/ScheduleTask";
-import { StepStatus } from "../../entity/JobBase";
+import ScheduleTask from "../../entities/ScheduleTask";
+import { StepStatus } from "../../entities/JobBase";
 import { transferJob } from "../jobLog";
 import { Worker } from "worker_threads";
 

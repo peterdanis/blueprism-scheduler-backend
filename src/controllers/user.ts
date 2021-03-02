@@ -1,6 +1,6 @@
 import { compare, hash } from "bcrypt";
 import { createHash } from "crypto";
-import User from "../entity/User";
+import User from "../entities/User";
 import { v4 as uuid } from "uuid";
 
 const saltRounds = 10;

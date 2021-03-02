@@ -1,4 +1,4 @@
-import Job from "../entity/Job";
+import Job from "../entities/Job";
 
 interface Header {
   auth: {

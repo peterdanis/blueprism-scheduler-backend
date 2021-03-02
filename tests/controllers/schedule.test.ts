@@ -2,7 +2,7 @@ import { Connection, createConnection } from "typeorm";
 import {
   getScheduleRef,
   registerExistingSchedules,
-} from "../../src/controller/schedule";
+} from "../../src/controllers/schedule";
 import config from "../testUtils/testConnectionConfig";
 import { install } from "@sinonjs/fake-timers";
 import loadDummies from "../testUtils/loadDummies";

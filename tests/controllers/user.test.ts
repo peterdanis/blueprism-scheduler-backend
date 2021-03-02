@@ -4,10 +4,10 @@ import {
   generateApiKey,
   verifyApiKey,
   verifyPassword,
-} from "../../src/controller/user";
+} from "../../src/controllers/user";
 import { Connection, createConnection } from "typeorm";
 import config from "../testUtils/testConnectionConfig";
-import User from "../../src/entity/User";
+import User from "../../src/entities/User";
 
 let connection: Connection;
 const testPassword = "password#123";

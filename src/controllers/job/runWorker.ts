@@ -1,12 +1,12 @@
 import axios, { AxiosError } from "axios";
 import { getCurrentTask, WorkerMessage } from "./run";
 import { getHeader, getUrl } from "../../utils/getUrlAndHeader";
-import Job from "../../entity/Job";
+import Job from "../../entities/Job";
 import logger from "../../utils/logger";
 import { parentPort } from "worker_threads";
 import { recheckDelay } from "../../utils/getSetting";
 import retry from "../../utils/retry";
-import ScheduleTask from "../../entity/ScheduleTask";
+import ScheduleTask from "../../entities/ScheduleTask";
 import sleep from "../../utils/sleep";
 
 type Status =

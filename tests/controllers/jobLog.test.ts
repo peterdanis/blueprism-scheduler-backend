@@ -1,11 +1,11 @@
 import { Connection, createConnection } from "typeorm";
-import { addJob } from "../../src/controller/job";
+import { addJob } from "../../src/controllers/job";
 import config from "../testUtils/testConnectionConfig";
-import Job from "../../src/entity/Job";
-import JobLog from "../../src/entity/JobLog";
+import Job from "../../src/entities/Job";
+import JobLog from "../../src/entities/JobLog";
 import loadDummies from "../testUtils/loadDummies";
-import Schedule from "../../src/entity/Schedule";
-import { transferJob } from "../../src/controller/jobLog";
+import Schedule from "../../src/entities/Schedule";
+import { transferJob } from "../../src/controllers/jobLog";
 
 jest.mock("../../src/utils/logger");
 
