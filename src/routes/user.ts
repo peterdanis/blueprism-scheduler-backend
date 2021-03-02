@@ -1,4 +1,5 @@
 import { addUser, getUser, getUsers } from "../controllers/user";
+import CustomError from "../utils/customError";
 import { Router } from "express";
 import User from "../entities/User";
 
@@ -17,12 +18,12 @@ router.post("/", async (req, res, next) => {
   try {
     const { name, password } = req.params;
     if (!name || !password) {
-      res.status(422).json({
-        error: `User can not be created, ${
+      throw new CustomError(
+        `User can not be created, ${
           name ? "password" : "name"
         } paremeter is missing`,
-      });
-      return;
+        422,
+      );
     }
     const user = await addUser(name, password);
     res.status(200).json(user);
@@ -39,8 +40,7 @@ router.get("/:userId", async (req, res, next) => {
       user = await getUser(parseInt(userId, 10));
     }
     if (!user) {
-      res.status(404).json({ error: "User not found" });
-      return;
+      throw new CustomError("User not found", 404);
     }
     res.status(200).json(user);
   } catch (error) {
