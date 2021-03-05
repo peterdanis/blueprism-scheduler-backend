@@ -1,6 +1,8 @@
+// import { format, transports } from "winston";
 import CustomError from "./utils/customError";
 import express from "express";
 import jobsRouter from "./routes/jobs";
+import log from "./utils/logger";
 import path from "path";
 import schedulesRouter from "./routes/schedules";
 import usersRouter from "./routes/users";
@@ -17,8 +19,12 @@ const app = express();
 app.disable("etag");
 app.disable("x-powered-by");
 
-// Use JSON middleware
+// Use JSON and logging middlewares
 app.use(express.json());
+app.use((req, res, next) => {
+  log.info(`HTTP ${req.method} ${req.url} ${res.statusCode}`);
+  next();
+});
 
 // Serve static files from the React app
 app.use(express.static(path.join("webapp")));
@@ -30,7 +36,9 @@ app.use("/api/users", usersRouter);
 
 // Route everything else to React app
 app.get("*", (req, res) => {
-  res.sendFile(path.join("webapp", "index.html"));
+  res.sendFile("index.html", {
+    root: path.join("webapp"),
+  });
 });
 
 // Error handler

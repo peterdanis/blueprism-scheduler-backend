@@ -7,7 +7,7 @@ const { combine, timestamp, json } = format;
 const logger = createLogger({
   format: combine(timestamp(), json()),
   level: "info",
-
+  // Use file transport when running as packaged app
   transports: process.pkg
     ? [
         new transports.DailyRotateFile({
