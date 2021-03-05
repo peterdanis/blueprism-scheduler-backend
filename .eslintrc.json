@@ -106,9 +106,10 @@
     }
   ],
   "ignorePatterns": [
-    "**/migration/**/*",
+    "**/migrations/**/*",
     "/build/**/*",
     "/pre-build/**/*",
-    "/src/controller/job/runWorker.js"
+    "/src/controller/job/runWorker.js",
+    "**/runWorker.js"
   ]
 }
