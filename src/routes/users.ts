@@ -1,10 +1,12 @@
 import { addUser, getUser, getUsers } from "../controllers/user";
 import CustomError from "../utils/customError";
 import { Router } from "express";
+import toNumber from "../utils/toInteger";
 import User from "../entities/User";
 
 const router = Router();
 
+// Get all users
 router.get("/", async (req, res, next) => {
   try {
     const users = await getUsers();
@@ -14,6 +16,7 @@ router.get("/", async (req, res, next) => {
   }
 });
 
+// Create new user and return it
 router.post("/", async (req, res, next) => {
   try {
     const { name, password } = req.params;
@@ -21,7 +24,7 @@ router.post("/", async (req, res, next) => {
       throw new CustomError(
         `User can not be created, ${
           name ? "password" : "name"
-        } paremeter is missing`,
+        } parameter is missing`,
         422,
       );
     }
@@ -32,14 +35,15 @@ router.post("/", async (req, res, next) => {
   }
 });
 
+// Get specific user
 router.get("/:userId", async (req, res, next) => {
   try {
     const { userId } = req.params;
     let user: User | undefined;
     if (userId) {
-      const parsedId = parseInt(userId, 10);
-      if (Number.isInteger(parsedId)) {
-        user = await getUser(parsedId);
+      const parsedUserId = toNumber(userId);
+      if (parsedUserId) {
+        user = await getUser(parsedUserId);
       }
     }
     if (!user) {
