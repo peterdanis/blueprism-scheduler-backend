@@ -19,7 +19,7 @@ router.get("/", async (req, res, next) => {
 // Create new user and return it
 router.post("/", async (req, res, next) => {
   try {
-    const { name, password } = req.params;
+    const { name, password } = req.body;
     if (!name || !password) {
       throw new CustomError(
         `User can not be created, ${
