@@ -22,7 +22,15 @@ app.disable("x-powered-by");
 // Use JSON and logging middlewares
 app.use(express.json());
 app.use((req, res, next) => {
-  log.info(`HTTP ${req.method} ${req.url} ${res.statusCode}`);
+  res.on("finish", () => {
+    log.info(`HTTP ${req.method} ${req.url} ${res.statusCode}`, {
+      bodyProperties: req.body ? Object.keys(req.body) : [],
+      ip: req.ip,
+      method: req.method,
+      statusCode: res.statusCode,
+      url: req.url,
+    });
+  });
   next();
 });
 
