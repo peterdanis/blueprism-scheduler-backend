@@ -12,11 +12,13 @@ const generateHash = (string: string): string =>
 
 export const addUser = async (
   name: string,
-  password: string,
+  password?: string,
 ): Promise<User> => {
   userCache = undefined;
   const user = User.create({ name });
-  user.password = await hash(password, saltRounds);
+  if (password) {
+    user.password = await hash(password, saltRounds);
+  }
   await user.save();
   return user;
 };
@@ -73,7 +75,7 @@ export const verifyPassword = async (
   secret: string,
 ): Promise<User | undefined> => {
   const user = await getUser(name);
-  if (user) {
+  if (user && user.password) {
     const match = await compare(secret, user.password);
     return match ? user : undefined;
   }

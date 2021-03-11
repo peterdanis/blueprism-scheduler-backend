@@ -20,11 +20,9 @@ router.get("/", async (req, res, next) => {
 router.post("/", async (req, res, next) => {
   try {
     const { name, password } = req.body;
-    if (!name || !password) {
+    if (!name) {
       throw new CustomError(
-        `User can not be created, ${
-          name ? "password" : "name"
-        } parameter is missing`,
+        "User can not be created, name parameter is missing",
         422,
       );
     }
