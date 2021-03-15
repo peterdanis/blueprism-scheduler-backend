@@ -54,7 +54,7 @@
     "typeorm": "^0.2.30",
     "uuid": "^8.3.2",
     "winston": "^3.3.3",
-    "winston-daily-rotate-file": "^4.5.0"
+    "winston-daily-rotate-file": "^4.5.1"
   },
   "devDependencies": {
     "@sinonjs/fake-timers": "^7.0.2",
