@@ -2,6 +2,7 @@
 import CustomError from "./utils/customError";
 import express from "express";
 import jobsRouter from "./routes/jobs";
+import jobLogsRouter from "./routes/jobLogs";
 import log from "./utils/logger";
 import path from "path";
 import schedulesRouter from "./routes/schedules";
@@ -39,6 +40,7 @@ app.use(express.static(path.join("webapp")));
 
 // Route handlers
 app.use("/api/jobs", jobsRouter);
+app.use("/api/jobLogs", jobLogsRouter);
 app.use("/api/schedules", schedulesRouter);
 app.use("/api/users", usersRouter);
 

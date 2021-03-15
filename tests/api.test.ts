@@ -1,23 +1,15 @@
 import app from "../src/api";
+import { dummyJob } from "./mocks/mockJob";
+import { dummyJobLog } from "./mocks/mockJobLog";
+import { dummySchedule } from "./mocks/mockSchedule";
 import { dummyUser } from "./mocks/mockUser";
 import request from "supertest";
-import Schedule from "../src/entities/Schedule";
 
 jest.mock("../src/utils/logger");
 jest.mock("../src/entities/User.ts");
-
-const dummySchedule: Partial<Schedule> = {
-  id: 1,
-  name: "TestSchedule",
-};
-
-const mockSchedule = jest.spyOn(Schedule, "find");
-
-mockSchedule.mockImplementation(
-  async (): Promise<Schedule[]> => {
-    return [dummySchedule as Schedule];
-  },
-);
+jest.mock("../src/entities/Schedule.ts");
+jest.mock("../src/entities/Job.ts");
+jest.mock("../src/entities/JobLog.ts");
 
 const get = (route: string): request.Test => request(app).get(route); // .auth(username, pw);
 
@@ -47,5 +39,21 @@ describe("Schedules route", () => {
     const result = await get("/api/schedules");
     expect(result.status).toBe(200);
     expect(result.body).toEqual([dummySchedule]);
+  });
+});
+
+describe("Jobs route", () => {
+  test("can get all jobs", async () => {
+    const result = await get("/api/jobs");
+    expect(result.status).toBe(200);
+    expect(result.body).toEqual([dummyJob]);
+  });
+});
+
+describe("JobLogs route", () => {
+  test("can get all jobs", async () => {
+    const result = await get("/api/jobLogs");
+    expect(result.status).toBe(200);
+    expect(result.body).toEqual([dummyJobLog]);
   });
 });

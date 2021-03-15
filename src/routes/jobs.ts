@@ -1,4 +1,4 @@
-import { addJob } from "../controllers/job";
+import { addJob, getJobs } from "../controllers/job";
 import CustomError from "../utils/customError";
 import { getSchedule } from "../controllers/schedule";
 import { Router } from "express";
@@ -9,7 +9,8 @@ const router = Router();
 // Get all jobs
 router.get("/", async (req, res, next) => {
   try {
-    //
+    const jobs = await getJobs();
+    res.status(200).json(jobs);
   } catch (error) {
     next(error);
   }
