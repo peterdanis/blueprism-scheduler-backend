@@ -1,10 +1,11 @@
 // import { format, transports } from "winston";
 import CustomError from "./utils/customError";
 import express from "express";
-import jobsRouter from "./routes/jobs";
 import jobLogsRouter from "./routes/jobLogs";
+import jobsRouter from "./routes/jobs";
 import log from "./utils/logger";
 import path from "path";
+import runtimeResourcesRouter from "./routes/runtimeResources";
 import schedulesRouter from "./routes/schedules";
 import usersRouter from "./routes/users";
 
@@ -41,6 +42,7 @@ app.use(express.static(path.join("webapp")));
 // Route handlers
 app.use("/api/jobs", jobsRouter);
 app.use("/api/jobLogs", jobLogsRouter);
+app.use("/api/runtimeResources", runtimeResourcesRouter);
 app.use("/api/schedules", schedulesRouter);
 app.use("/api/users", usersRouter);
 

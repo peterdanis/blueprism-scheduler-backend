@@ -4,12 +4,14 @@ import { dummyJobLog } from "./mocks/mockJobLog";
 import { dummySchedule } from "./mocks/mockSchedule";
 import { dummyUser } from "./mocks/mockUser";
 import request from "supertest";
+import { dummyMachine } from "./mocks/mockRuntimeResource";
 
 jest.mock("../src/utils/logger");
 jest.mock("../src/entities/User.ts");
 jest.mock("../src/entities/Schedule.ts");
 jest.mock("../src/entities/Job.ts");
 jest.mock("../src/entities/JobLog.ts");
+jest.mock("../src/entities/RuntimeResource.ts");
 
 const get = (route: string): request.Test => request(app).get(route); // .auth(username, pw);
 
@@ -55,5 +57,13 @@ describe("JobLogs route", () => {
     const result = await get("/api/jobLogs");
     expect(result.status).toBe(200);
     expect(result.body).toEqual([dummyJobLog]);
+  });
+});
+
+describe("RuntimeResources route", () => {
+  test("can get all runtime resources", async () => {
+    const result = await get("/api/runtimeResources");
+    expect(result.status).toBe(200);
+    expect(result.body).toEqual([dummyMachine]);
   });
 });
