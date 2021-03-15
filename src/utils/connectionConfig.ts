@@ -12,6 +12,7 @@ import path from "path";
 import RuntimeResource from "../entities/RuntimeResource";
 import Schedule from "../entities/Schedule";
 import ScheduleTask from "../entities/ScheduleTask";
+import Setting from "../entities/Setting";
 import { SqlServerConnectionOptions } from "typeorm/driver/sqlserver/SqlServerConnectionOptions";
 import Task from "../entities/Task";
 import typeOrmLogger from "./typeOrmLogger";
@@ -22,7 +23,16 @@ const migrationDir = path.join(__dirname, "..", "migrations");
 const schedDbConfig: SqlServerConnectionOptions = {
   cli: { migrationsDir: "/src/migrations/" },
   database: dbName,
-  entities: [Job, JobLog, RuntimeResource, Schedule, ScheduleTask, Task, User],
+  entities: [
+    Job,
+    JobLog,
+    RuntimeResource,
+    Schedule,
+    ScheduleTask,
+    Setting,
+    Task,
+    User,
+  ],
   host: dbHost,
   logger: typeOrmLogger,
   migrations: [`${migrationDir}/*`],

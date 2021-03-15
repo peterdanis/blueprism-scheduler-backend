@@ -1,7 +1,7 @@
 import {MigrationInterface, QueryRunner} from "typeorm";
 
-export class migration1614257196327 implements MigrationInterface {
-    name = 'migration1614257196327'
+export class migration1615807748058 implements MigrationInterface {
+    name = 'migration1615807748058'
 
     public async up(queryRunner: QueryRunner): Promise<void> {
         await queryRunner.query(`CREATE TABLE "task" ("id" integer PRIMARY KEY AUTOINCREMENT NOT NULL, "inputs" text, "hardTimeout" integer NOT NULL DEFAULT (86400000), "name" varchar NOT NULL, "process" varchar NOT NULL, "softTimeout" integer NOT NULL DEFAULT (86400000), CONSTRAINT "UQ_20f1f21d6853d9d20d501636ebd" UNIQUE ("name"))`);
@@ -10,6 +10,7 @@ export class migration1614257196327 implements MigrationInterface {
         await queryRunner.query(`CREATE TABLE "runtime_resource" ("id" integer PRIMARY KEY AUTOINCREMENT NOT NULL, "apiKey" varchar, "auth" varchar NOT NULL, "friendlyName" varchar NOT NULL, "hostname" varchar NOT NULL, "https" boolean NOT NULL DEFAULT (1), "password" varchar, "port" integer NOT NULL, "username" varchar)`);
         await queryRunner.query(`CREATE TABLE "job" ("id" integer PRIMARY KEY AUTOINCREMENT NOT NULL, "addTime" datetime NOT NULL, "endTime" datetime, "message" varchar, "priority" integer NOT NULL DEFAULT (50), "sessionId" varchar, "startTime" datetime, "startReason" varchar NOT NULL, "status" varchar NOT NULL, "step" integer NOT NULL DEFAULT (1), "steps" text, "stopReason" varchar, "subStep" integer NOT NULL DEFAULT (1), "updateTime" datetime NOT NULL DEFAULT (datetime('now')), "runtimeResourceId" integer NOT NULL, "scheduleId" integer NOT NULL)`);
         await queryRunner.query(`CREATE TABLE "job_log" ("id" integer PRIMARY KEY AUTOINCREMENT NOT NULL, "addTime" datetime NOT NULL, "endTime" datetime, "message" varchar, "priority" integer NOT NULL DEFAULT (50), "sessionId" varchar, "startTime" datetime, "startReason" varchar NOT NULL, "status" varchar NOT NULL, "step" integer NOT NULL DEFAULT (1), "steps" text, "stopReason" varchar, "subStep" integer NOT NULL DEFAULT (1), "updateTime" datetime NOT NULL DEFAULT (datetime('now')), "jobId" integer NOT NULL, "scheduleId" integer NOT NULL, "runtimeResourceId" integer NOT NULL)`);
+        await queryRunner.query(`CREATE TABLE "setting" ("id" integer PRIMARY KEY AUTOINCREMENT NOT NULL, "key" varchar NOT NULL, "value" varchar NOT NULL)`);
         await queryRunner.query(`CREATE TABLE "user" ("id" integer PRIMARY KEY AUTOINCREMENT NOT NULL, "apiKey" varchar, "apiKeyHash" varchar, "admin" boolean NOT NULL DEFAULT (0), "name" varchar NOT NULL, "password" varchar, CONSTRAINT "UQ_065d4d8f3b5adb4a08841eae3c8" UNIQUE ("name"))`);
         await queryRunner.query(`CREATE TABLE "temporary_schedule_task" ("id" integer PRIMARY KEY AUTOINCREMENT NOT NULL, "abortEarly" boolean NOT NULL DEFAULT (1), "delayAfter" integer NOT NULL DEFAULT (0), "onError" text, "step" integer NOT NULL, "scheduleId" integer NOT NULL, "taskId" integer NOT NULL, CONSTRAINT "step_scheduleId" UNIQUE ("step", "scheduleId"), CONSTRAINT "FK_d95bd16410db6dc3e20321934b3" FOREIGN KEY ("scheduleId") REFERENCES "schedule" ("id") ON DELETE NO ACTION ON UPDATE NO ACTION, CONSTRAINT "FK_e10cfa597abaf6bb86ed247aca2" FOREIGN KEY ("taskId") REFERENCES "task" ("id") ON DELETE NO ACTION ON UPDATE NO ACTION)`);
         await queryRunner.query(`INSERT INTO "temporary_schedule_task"("id", "abortEarly", "delayAfter", "onError", "step", "scheduleId", "taskId") SELECT "id", "abortEarly", "delayAfter", "onError", "step", "scheduleId", "taskId" FROM "schedule_task"`);
@@ -39,6 +40,7 @@ export class migration1614257196327 implements MigrationInterface {
         await queryRunner.query(`INSERT INTO "schedule_task"("id", "abortEarly", "delayAfter", "onError", "step", "scheduleId", "taskId") SELECT "id", "abortEarly", "delayAfter", "onError", "step", "scheduleId", "taskId" FROM "temporary_schedule_task"`);
         await queryRunner.query(`DROP TABLE "temporary_schedule_task"`);
         await queryRunner.query(`DROP TABLE "user"`);
+        await queryRunner.query(`DROP TABLE "setting"`);
         await queryRunner.query(`DROP TABLE "job_log"`);
         await queryRunner.query(`DROP TABLE "job"`);
         await queryRunner.query(`DROP TABLE "runtime_resource"`);
