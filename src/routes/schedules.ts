@@ -1,5 +1,12 @@
-import { getSchedules } from "../controllers/schedule";
+import {
+  getSchedule,
+  getSchedules,
+  updateSchedule,
+} from "../controllers/schedule";
+import CustomError from "../utils/customError";
 import { Router } from "express";
+import Schedule from "../entities/Schedule";
+import toInteger from "../utils/toInteger";
 
 const router = Router();
 
@@ -21,9 +28,49 @@ router.post("/", async (req, res, next) => {
   }
 });
 
+// Get specific schedule
 router.get("/:scheduleId", async (req, res, next) => {
   try {
-    //
+    const { scheduleId } = req.params;
+    let schedule: Schedule | undefined;
+    if (scheduleId) {
+      const parsedScheduleId = toInteger(scheduleId);
+      if (parsedScheduleId) {
+        schedule = await getSchedule(parsedScheduleId);
+      }
+    }
+    if (!schedule) {
+      throw new CustomError("Schedule not found", 404);
+    }
+    res.status(200).json(schedule);
+  } catch (error) {
+    next(error);
+  }
+});
+
+// Update schedule
+router.patch("/:scheduleId", async (req, res, next) => {
+  try {
+    const { scheduleId } = req.params;
+    let schedule: Schedule | undefined;
+    if (scheduleId) {
+      const parsedScheduleId = toInteger(scheduleId);
+      if (parsedScheduleId) {
+        schedule = await getSchedule(parsedScheduleId);
+      }
+    }
+    if (!schedule) {
+      throw new CustomError("Schedule not found", 404);
+    }
+    const { name, rule }: Partial<Schedule> = req.body;
+    if (name) {
+      schedule.name = name;
+    }
+    if (rule) {
+      schedule.rule = rule;
+    }
+    const updatedSchedule = await updateSchedule(schedule);
+    res.status(200).json(updatedSchedule);
   } catch (error) {
     next(error);
   }

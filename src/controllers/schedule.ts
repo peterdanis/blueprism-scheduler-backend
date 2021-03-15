@@ -9,6 +9,9 @@ export const clearScheduleCache = (): void => {
   schedulesCache = undefined;
 };
 
+export const getScheduleRef = (id: number): NodeSchedule | undefined =>
+  scheduledJobs[id.toString()];
+
 export const getSchedules = async (): Promise<Schedule[]> => {
   if (!schedulesCache) {
     schedulesCache = await Schedule.find();
@@ -41,16 +44,17 @@ export const registerSchedule = (schedule: Schedule): void => {
   );
 };
 
-// export const updateSchedule = (schedule: Schedule): Promise<Schedule> => {
-//   //
-// };
+export const updateSchedule = async (schedule: Schedule): Promise<Schedule> => {
+  await schedule.save();
+  const scheduleRef = getScheduleRef(schedule.id);
+  scheduleRef?.cancel();
+  registerSchedule(schedule);
+  return schedule;
+};
 
 // export const addSchedule = (): Promise<Schedule> => {
 //   //
 // };
-
-export const getScheduleRef = (id: number): NodeSchedule | undefined =>
-  scheduledJobs[id.toString()];
 
 let schedulesRegistered = false;
 
