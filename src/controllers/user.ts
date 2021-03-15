@@ -48,8 +48,8 @@ export const updateUser = async (user: User): Promise<User> => {
   return user.save();
 };
 
-export const generateApiKey = async (name: string): Promise<string> => {
-  const user = await getUser(name);
+export const generateApiKey = async (id: number): Promise<string> => {
+  const user = await getUser(id);
   if (!user) {
     throw new Error("No user found");
   }

@@ -41,8 +41,8 @@ test("User without password can not be authenticated", async () => {
 
 test("Regenerating API key returns new and correct API key", async () => {
   const [user] = await User.find();
-  const oldApiKey = await generateApiKey(user!.name);
-  const newApiKey = await generateApiKey(user!.name);
+  const oldApiKey = await generateApiKey(user!.id);
+  const newApiKey = await generateApiKey(user!.id);
   const oldKeyMatch = await verifyApiKey(oldApiKey);
   const newKeyMatch = await verifyApiKey(newApiKey);
   expect(oldKeyMatch).toBeUndefined();

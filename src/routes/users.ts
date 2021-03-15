@@ -1,4 +1,10 @@
-import { addUser, getUser, getUsers } from "../controllers/user";
+import {
+  addUser,
+  deleteUser,
+  generateApiKey,
+  getUser,
+  getUsers,
+} from "../controllers/user";
 import CustomError from "../utils/customError";
 import { Router } from "express";
 import toNumber from "../utils/toInteger";
@@ -48,6 +54,39 @@ router.get("/:userId", async (req, res, next) => {
       throw new CustomError("User not found", 404);
     }
     res.status(200).json(user);
+  } catch (error) {
+    next(error);
+  }
+});
+
+// Delete specific user
+router.delete("/:userId", async (req, res, next) => {
+  try {
+    const { userId } = req.params;
+    if (userId) {
+      const parsedUserId = toNumber(userId);
+      if (parsedUserId) {
+        await deleteUser(parsedUserId);
+      }
+    }
+    res.status(200).json({});
+  } catch (error) {
+    next(error);
+  }
+});
+
+// Create new API key and return it
+router.post("/:userId/apikey", async (req, res, next) => {
+  let key: string | undefined;
+  try {
+    const { userId } = req.params;
+    if (userId) {
+      const parsedUserId = toNumber(userId);
+      if (parsedUserId) {
+        key = await generateApiKey(parsedUserId);
+      }
+    }
+    res.status(200).json({ apiKey: key });
   } catch (error) {
     next(error);
   }
