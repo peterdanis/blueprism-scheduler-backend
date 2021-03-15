@@ -3,7 +3,11 @@ import { addJob } from "./job";
 import Job from "../entities/Job";
 import Schedule from "../entities/Schedule";
 
-let schedulesCache: Schedule[];
+let schedulesCache: Schedule[] | undefined;
+
+export const clearScheduleCache = (): void => {
+  schedulesCache = undefined;
+};
 
 export const getSchedules = async (): Promise<Schedule[]> => {
   if (!schedulesCache) {
