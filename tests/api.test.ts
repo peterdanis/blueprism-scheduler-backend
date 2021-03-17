@@ -53,7 +53,7 @@ describe("Jobs route", () => {
 });
 
 describe("JobLogs route", () => {
-  test("can get all jobs", async () => {
+  test("can get all jobLogs", async () => {
     const result = await get("/api/jobLogs");
     expect(result.status).toBe(200);
     expect(result.body).toEqual([dummyJobLog]);

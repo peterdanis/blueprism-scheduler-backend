@@ -1,6 +1,7 @@
 import { Job as NodeSchedule, scheduledJobs, scheduleJob } from "node-schedule";
 import { addJob } from "./job";
 import Job from "../entities/Job";
+import { parseExpression } from "cron-parser";
 import Schedule from "../entities/Schedule";
 
 let schedulesCache: Schedule[] | undefined;
@@ -52,9 +53,18 @@ export const updateSchedule = async (schedule: Schedule): Promise<Schedule> => {
   return schedule;
 };
 
-// export const addSchedule = (): Promise<Schedule> => {
-//   //
-// };
+export const addSchedule = async (
+  scheduleLikeObject: Partial<Schedule>,
+): Promise<Schedule> => {
+  if (!scheduleLikeObject.rule) {
+    throw new Error("Rule not defined");
+  }
+  parseExpression(scheduleLikeObject.rule);
+  const schedule = Schedule.create(scheduleLikeObject);
+  await schedule.save();
+  registerSchedule(schedule);
+  return schedule;
+};
 
 let schedulesRegistered = false;
 
