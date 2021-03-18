@@ -1,10 +1,10 @@
 import app from "../src/api";
 import { dummyJob } from "./mocks/mockJob";
 import { dummyJobLog } from "./mocks/mockJobLog";
+import { dummyMachine } from "./mocks/mockRuntimeResource";
 import { dummySchedule } from "./mocks/mockSchedule";
 import { dummyUser } from "./mocks/mockUser";
 import request from "supertest";
-import { dummyMachine } from "./mocks/mockRuntimeResource";
 
 jest.mock("../src/utils/logger");
 jest.mock("../src/entities/User.ts");

@@ -4,6 +4,7 @@ import Job from "../../entities/Job";
 import log from "../../utils/logger";
 import retry from "../../utils/retry";
 import Schedule from "../../entities/Schedule";
+import { transferJob } from "../jobLog";
 
 let checking = false;
 let firstRun = true;
@@ -87,7 +88,7 @@ export const getJobs = async (
 };
 
 /**
- * Starts queued jobs on free resources. In case of first run, it will try to restart previously running jobs (e.g. after app crash).
+ * Starts queued jobs on free resources. In case of first run, it will try to clear any outstanding jobs and restart previously running jobs (e.g. after app crash).
  */
 export const startIfAvailable = async (): Promise<void> => {
   if (checking) {
@@ -99,6 +100,27 @@ export const startIfAvailable = async (): Promise<void> => {
     // Check jobRef array for items marked for deletion
     runningJobRef = runningJobRef.filter((jobRef) => !jobRef.delete);
 
+    // Clear any outstanding jobs on first run
+    if (firstRun) {
+      const jobsToClear = await getJobs([
+        { status: "failed" },
+        { status: "finished" },
+        { status: "finished with notes" },
+        { status: "stopped" },
+        { status: "canceled" },
+      ]);
+      // eslint-disable-next-line no-restricted-syntax
+      for (const job of jobsToClear) {
+        try {
+          // eslint-disable-next-line no-await-in-loop
+          await transferJob(job, "Cleared at startup");
+        } catch (error) {
+          log.error("Cleared at startup", { jobId: job.id });
+        }
+      }
+    }
+
+    // Re-start running jobs or start new if free
     const jobs = await getJobs([{ status: "running" }, { status: "waiting" }]);
     if (jobs.length === 0) {
       return;
@@ -127,7 +149,7 @@ export const startIfAvailable = async (): Promise<void> => {
       }
     }
   } catch (error) {
-    //
+    log.error(error.message, { error: error.response.data });
   } finally {
     firstRun = false;
     checking = false;
@@ -136,11 +158,7 @@ export const startIfAvailable = async (): Promise<void> => {
 
 export const startPeriodicCheck = (): NodeJS.Timeout => {
   const interval = setInterval(async () => {
-    try {
-      await startIfAvailable();
-    } catch (error) {
-      log.error(error);
-    }
+    await startIfAvailable();
   }, checkInterval);
   return interval;
 };

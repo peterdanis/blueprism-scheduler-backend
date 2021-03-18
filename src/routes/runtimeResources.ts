@@ -4,6 +4,7 @@ import {
 } from "../controllers/runtimeResource";
 import CustomError from "../utils/customError";
 import { Router } from "express";
+import RuntimeResource from "../entities/RuntimeResource";
 
 const router = Router();
 
@@ -19,21 +20,32 @@ router.get("/", async (req, res, next) => {
 
 router.post("/", async (req, res, next) => {
   try {
-    const { hostname, port, username, password } = req.body;
-    if (!hostname || !port || !username || !password) {
-      throw new CustomError(
-        "Runtime resource can not be created, a required parameter is missing",
-        422,
-      );
-    }
-    const runtimeResource = await addRuntimeResource(
-      hostname,
-      port,
-      username,
-      password,
-    );
+    //   const {
+    //     auth,
+    //     friendlyName,
+    //     hostname,
+    //     port,
+    //     username,
+    //     password,
+    //   } = req.body as Partial<RuntimeResource>;
+    //   if (
+    //     !hostname ||
+    //     !port ||
+    //     !username ||
+    //     !password ||
+    //     !auth ||
+    //     !friendlyName
+    //   ) {
+    //     throw new CustomError(
+    //       "Runtime resource can not be created, a required parameter is missing",
+    //       422,
+    //     );
+    //   }
+    const runtimeResource = await addRuntimeResource(req.body);
     res.status(201).json(runtimeResource);
   } catch (error) {
+    const msg: string = error.message;
+    console.log(/NULL/.test(msg));
     next(error);
   }
 });

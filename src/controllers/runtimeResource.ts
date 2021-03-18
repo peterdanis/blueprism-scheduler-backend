@@ -1,20 +1,13 @@
+import { clearScheduleCache } from "./schedule";
 import RuntimeResource from "../entities/RuntimeResource";
 
 export const getRuntimeResources = async (): Promise<RuntimeResource[]> =>
   RuntimeResource.find();
 
 export const addRuntimeResource = (
-  hostname: string,
-  port: number,
-  username: string,
-  password: string,
+  runtimeResourceLikeObject: Partial<RuntimeResource>,
 ): Promise<RuntimeResource> => {
-  const runtimeResource = RuntimeResource.create();
-  runtimeResource.auth = "basic";
-  runtimeResource.https = true;
-  runtimeResource.hostname = hostname;
-  runtimeResource.port = port;
-  runtimeResource.username = username;
-  runtimeResource.password = password;
+  clearScheduleCache();
+  const runtimeResource = RuntimeResource.create(runtimeResourceLikeObject);
   return runtimeResource.save();
 };
