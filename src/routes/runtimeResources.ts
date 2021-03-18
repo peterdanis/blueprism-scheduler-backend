@@ -1,18 +1,19 @@
 import {
   addRuntimeResource,
+  getRuntimeResource,
   getRuntimeResources,
 } from "../controllers/runtimeResource";
 import CustomError from "../utils/customError";
 import { Router } from "express";
 import RuntimeResource from "../entities/RuntimeResource";
+import toInteger from "../utils/toInteger";
 
 const router = Router();
 
-// Get all schedules
 router.get("/", async (req, res, next) => {
   try {
-    const schedules = await getRuntimeResources();
-    res.status(200).json(schedules);
+    const runtimeResources = await getRuntimeResources();
+    res.status(200).json(runtimeResources);
   } catch (error) {
     next(error);
   }
@@ -20,39 +21,37 @@ router.get("/", async (req, res, next) => {
 
 router.post("/", async (req, res, next) => {
   try {
-    //   const {
-    //     auth,
-    //     friendlyName,
-    //     hostname,
-    //     port,
-    //     username,
-    //     password,
-    //   } = req.body as Partial<RuntimeResource>;
-    //   if (
-    //     !hostname ||
-    //     !port ||
-    //     !username ||
-    //     !password ||
-    //     !auth ||
-    //     !friendlyName
-    //   ) {
-    //     throw new CustomError(
-    //       "Runtime resource can not be created, a required parameter is missing",
-    //       422,
-    //     );
-    //   }
     const runtimeResource = await addRuntimeResource(req.body);
     res.status(201).json(runtimeResource);
   } catch (error) {
     const msg: string = error.message;
-    console.log(/NULL/.test(msg));
+    if (/NULL/.test(msg)) {
+      next(
+        new CustomError(
+          "Runtime resource can not be created, a required parameter is missing",
+          422,
+        ),
+      );
+      return;
+    }
     next(error);
   }
 });
 
-router.get("/:scheduleId", async (req, res, next) => {
+router.get("/:runtimeResourceId", async (req, res, next) => {
   try {
-    //
+    const { runtimeResourceId } = req.params;
+    let runtimeResource: RuntimeResource | undefined;
+    if (runtimeResourceId) {
+      const parsedRuntimeResourceId = toInteger(runtimeResourceId);
+      if (parsedRuntimeResourceId) {
+        runtimeResource = await getRuntimeResource(parsedRuntimeResourceId);
+      }
+    }
+    if (!runtimeResource) {
+      throw new CustomError("Runtime resource not found", 404);
+    }
+    res.status(200).json(runtimeResource);
   } catch (error) {
     next(error);
   }

@@ -3,16 +3,16 @@ import Task from "../entities/Task";
 
 let tasksCache: Task[] | undefined;
 
+const clearCache = (): void => {
+  tasksCache = undefined;
+  clearScheduleCache();
+};
+
 export const getTasks = async (): Promise<Task[]> => {
   if (!tasksCache) {
     tasksCache = await Task.find();
   }
   return tasksCache;
-};
-
-const clearCache = (): void => {
-  tasksCache = undefined;
-  clearScheduleCache();
 };
 
 export const getTask = async (
