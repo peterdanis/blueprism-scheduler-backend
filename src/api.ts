@@ -1,4 +1,3 @@
-// import { format, transports } from "winston";
 import CustomError from "./utils/customError";
 import express from "express";
 import jobLogsRouter from "./routes/jobLogs";
@@ -7,6 +6,7 @@ import log from "./utils/logger";
 import path from "path";
 import runtimeResourcesRouter from "./routes/runtimeResources";
 import schedulesRouter from "./routes/schedules";
+import tasksRouter from "./routes/tasks";
 import usersRouter from "./routes/users";
 
 const app = express();
@@ -41,10 +41,11 @@ app.use((req, res, next) => {
 app.use(express.static(path.join("webapp")));
 
 // Route handlers
-app.use("/api/jobs", jobsRouter);
 app.use("/api/jobLogs", jobLogsRouter);
+app.use("/api/jobs", jobsRouter);
 app.use("/api/runtimeResources", runtimeResourcesRouter);
 app.use("/api/schedules", schedulesRouter);
+app.use("/api/tasks", tasksRouter);
 app.use("/api/users", usersRouter);
 
 // Route everything else to React app
