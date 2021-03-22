@@ -46,6 +46,7 @@ export const registerSchedule = (schedule: Schedule): void => {
 };
 
 export const updateSchedule = async (schedule: Schedule): Promise<Schedule> => {
+  clearScheduleCache();
   await schedule.save();
   const scheduleRef = getScheduleRef(schedule.id);
   scheduleRef?.cancel();
@@ -56,6 +57,7 @@ export const updateSchedule = async (schedule: Schedule): Promise<Schedule> => {
 export const addSchedule = async (
   scheduleLikeObject: Partial<Schedule>,
 ): Promise<Schedule> => {
+  clearScheduleCache();
   if (!scheduleLikeObject.rule) {
     throw new Error("Rule not defined");
   }

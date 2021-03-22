@@ -62,14 +62,9 @@ router.patch("/:scheduleId", async (req, res, next) => {
     if (!schedule) {
       throw new CustomError("Schedule not found", 404);
     }
-    const { name, rule }: Partial<Schedule> = req.body;
-    if (name) {
-      schedule.name = name;
-    }
-    if (rule) {
-      schedule.rule = rule;
-    }
-    const updatedSchedule = await updateSchedule(schedule);
+    const updatedSchedule = await updateSchedule(
+      Object.assign(schedule, req.body),
+    );
     res.status(200).json(updatedSchedule);
   } catch (error) {
     next(error);
