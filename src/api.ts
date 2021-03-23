@@ -6,6 +6,7 @@ import log from "./utils/logger";
 import path from "path";
 import runtimeResourcesRouter from "./routes/runtimeResources";
 import schedulesRouter from "./routes/schedules";
+import setupAuth from "./utils/auth";
 import tasksRouter from "./routes/tasks";
 import usersRouter from "./routes/users";
 
@@ -14,7 +15,7 @@ const app = express();
 // Setup logging and rate limiter
 // setupLog(app);
 // setupRateLimiter(app);
-// setupAuth(app);
+setupAuth(app);
 // setupSwagger(app);
 
 // Disable headers
