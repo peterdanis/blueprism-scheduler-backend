@@ -3,6 +3,7 @@ import CustomError from "../utils/customError";
 import { getSchedule } from "../controllers/schedule";
 import { Router } from "express";
 import toNumber from "../utils/toInteger";
+import User from "../entities/User";
 
 const router = Router();
 
@@ -19,7 +20,7 @@ router.get("/", async (req, res, next) => {
 // Add new job to queue
 router.post("/", async (req, res, next) => {
   try {
-    const { scheduleId, scheduleName } = req.params;
+    const { scheduleId, scheduleName } = req.body;
     if (typeof scheduleId !== "string" && typeof scheduleName !== "string") {
       throw new CustomError(
         "Job can not be started, scheduleId nor scheduleName parameter is defined",
@@ -38,8 +39,11 @@ router.post("/", async (req, res, next) => {
         422,
       );
     }
-    // TODO: Add user id
-    const job = await addJob(schedule, "req.user?.id");
+    let user: Partial<User> = { id: 0, name: "unknown" };
+    if (req.user) {
+      user = req.user;
+    }
+    const job = await addJob(schedule, `userId:${user.id}, name:${user.name}`);
     res.status(201).json(job);
   } catch (error) {
     next(error);
