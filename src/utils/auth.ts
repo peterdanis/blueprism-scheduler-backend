@@ -1,8 +1,9 @@
 import { authenticate, initialize, use } from "passport";
-import { getUsers, verifyPassword } from "../controllers/user";
+import { getUsers, verifyApiKey, verifyPassword } from "../controllers/user";
 import { BasicStrategy } from "passport-http";
 import { Express } from "express";
 import log from "./logger";
+import { Strategy } from "passport-http-bearer";
 
 use(
   new BasicStrategy(
@@ -27,9 +28,26 @@ use(
   ),
 );
 
+use(
+  new Strategy(
+    async (token, done): Promise<void> => {
+      try {
+        const user = await verifyApiKey(token);
+        if (user) {
+          return done(null, user);
+        }
+        return done(null, false);
+      } catch (error) {
+        log.error(error.message, { error });
+        return done(error);
+      }
+    },
+  ),
+);
+
 const setup = (app: Express): void => {
   app.use(initialize());
-  app.use(authenticate("basic", { session: false }));
+  app.use(authenticate(["basic", "bearer"], { session: false }));
 };
 
 export default setup;
