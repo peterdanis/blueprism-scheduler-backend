@@ -1,16 +1,10 @@
 import { getJobLogs } from "../controllers/jobLog";
+import { getMany } from "./shared";
 import { Router } from "express";
 
 const router = Router();
 
 // Get all jobLogs
-router.get("/", async (req, res, next) => {
-  try {
-    const jobs = await getJobLogs();
-    res.status(200).json(jobs);
-  } catch (error) {
-    next(error);
-  }
-});
+router.get("/", getMany(getJobLogs));
 
 export default router;

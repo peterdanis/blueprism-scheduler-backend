@@ -1,6 +1,8 @@
 import { addJob, getJobs } from "../controllers/job";
 import CustomError from "../utils/customError";
+import { getMany } from "./shared";
 import { getSchedule } from "../controllers/schedule";
+import Job from "../entities/Job";
 import { Router } from "express";
 import toNumber from "../utils/toInteger";
 import User from "../entities/User";
@@ -8,14 +10,7 @@ import User from "../entities/User";
 const router = Router();
 
 // Get all jobs
-router.get("/", async (req, res, next) => {
-  try {
-    const jobs = await getJobs();
-    res.status(200).json(jobs);
-  } catch (error) {
-    next(error);
-  }
-});
+router.get("/", getMany(getJobs as () => Promise<Job[]>, undefined));
 
 // Add new job to queue
 router.post("/", async (req, res, next) => {
@@ -45,15 +40,6 @@ router.post("/", async (req, res, next) => {
     }
     const job = await addJob(schedule, `userId:${user.id}, name:${user.name}`);
     res.status(201).json(job);
-  } catch (error) {
-    next(error);
-  }
-});
-
-// Get specific job
-router.get("/:jobId", async (req, res, next) => {
-  try {
-    //
   } catch (error) {
     next(error);
   }

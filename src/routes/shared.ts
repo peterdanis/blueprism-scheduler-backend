@@ -1,4 +1,3 @@
-import { FindConditions, FindManyOptions } from "typeorm";
 import { NextFunction, Request, Response } from "express";
 import CustomError from "../utils/customError";
 import toInteger from "../utils/toInteger";
@@ -79,8 +78,8 @@ export const getOne = <T>(
 };
 
 export const getMany = <T>(
-  fn: (arg?: FindManyOptions | FindConditions<T>) => Promise<T>,
-  optionsOrConditions?: FindManyOptions | FindConditions<T>,
+  fn: (arg?: Partial<T>) => Promise<T>,
+  optionsOrConditions?: Partial<T>,
 ) => {
   return async (
     req: Request,

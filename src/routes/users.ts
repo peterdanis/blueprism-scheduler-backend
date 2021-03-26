@@ -6,7 +6,6 @@ import {
   getUsers,
 } from "../controllers/user";
 import { create, del, getMany, getOne } from "./shared";
-import CustomError from "../utils/customError";
 import { Router } from "express";
 import toInteger from "../utils/toInteger";
 

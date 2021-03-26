@@ -4,46 +4,22 @@ import {
   getSchedules,
   updateSchedule,
 } from "../controllers/schedule";
+import { create, getMany, getOne } from "./shared";
 import CustomError from "../utils/customError";
 import { Router } from "express";
 import Schedule from "../entities/Schedule";
 import toInteger from "../utils/toInteger";
-import { create } from "./shared";
 
 const router = Router();
 
 // Get all schedules
-router.get("/", async (req, res, next) => {
-  try {
-    const schedules = await getSchedules();
-    res.status(200).json(schedules);
-  } catch (error) {
-    next(error);
-  }
-});
+router.get("/", getMany(getSchedules));
 
 // Create new schedule
 router.post("/", create(addSchedule, "Schedule"));
 
 // Get specific schedule
-router.get("/:scheduleId", async (req, res, next) => {
-  try {
-    const { scheduleId } = req.params;
-    let schedule: Schedule | undefined;
-    if (scheduleId) {
-      const parsedScheduleId = toInteger(scheduleId);
-      if (parsedScheduleId) {
-        schedule = await getSchedule(parsedScheduleId);
-      }
-    }
-    if (!schedule) {
-      throw new CustomError("Schedule not found", 404);
-    }
-    res.status(200).json(schedule);
-  } catch (error) {
-    next(error);
-  }
-});
+router.get("/:scheduleId", getOne("scheduleId", getSchedule, "Schedule"));
 
 // Update schedule
 router.patch("/:scheduleId", async (req, res, next) => {
