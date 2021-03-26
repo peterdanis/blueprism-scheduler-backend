@@ -6,6 +6,7 @@ import toInteger from "../utils/toInteger";
 
 const router = Router();
 
+// Get all tasks
 router.get("/", async (req, res, next) => {
   try {
     const tasks = await getTasks();
@@ -15,6 +16,7 @@ router.get("/", async (req, res, next) => {
   }
 });
 
+// Create new task and return it
 router.post("/", async (req, res, next) => {
   try {
     const task = await addTask(req.body);
@@ -34,6 +36,7 @@ router.post("/", async (req, res, next) => {
   }
 });
 
+// Get specific task
 router.get("/:taskId", async (req, res, next) => {
   try {
     const { runtimeResourceId: taskId } = req.params;

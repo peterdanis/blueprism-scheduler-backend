@@ -8,6 +8,7 @@ import CustomError from "../utils/customError";
 import { Router } from "express";
 import Schedule from "../entities/Schedule";
 import toInteger from "../utils/toInteger";
+import { create } from "./shared";
 
 const router = Router();
 
@@ -21,24 +22,8 @@ router.get("/", async (req, res, next) => {
   }
 });
 
-router.post("/", async (req, res, next) => {
-  try {
-    const schedule = await addSchedule(req.body);
-    res.status(201).json(schedule);
-  } catch (error) {
-    const msg: string = error.message;
-    if (/NULL/.test(msg)) {
-      next(
-        new CustomError(
-          "Schedule can not be created, a required parameter is missing",
-          422,
-        ),
-      );
-      return;
-    }
-    next(error);
-  }
-});
+// Create new schedule
+router.post("/", create(addSchedule, "Schedule"));
 
 // Get specific schedule
 router.get("/:scheduleId", async (req, res, next) => {

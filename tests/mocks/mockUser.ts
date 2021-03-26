@@ -3,6 +3,7 @@ import User from "../../src/entities/User";
 export const dummyUser: Partial<User> = {
   id: 1,
   name: "TestUser",
+  password: "$2a$10$MssG26jzGpdgzjyAERlQT.wXdM87duv7OMguJ0GAVbuSNIxXFooFW", // Bcrypted "password"
 };
 
 // @ts-ignore

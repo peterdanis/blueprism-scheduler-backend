@@ -11,9 +11,9 @@ import config from "../testUtils/testConnectionConfig";
 import User from "../../src/entities/User";
 
 let connection: Connection;
-const testPassword = "password#123";
-const testUserName = "testUser";
-const testUserName2 = "testUser2";
+const password = "password#123";
+const name = "testUser";
+const secondName = "testUser2";
 
 beforeAll(async () => {
   connection = await createConnection(config);
@@ -24,18 +24,18 @@ afterAll(async () => {
 });
 
 test("Adding new user creates and returns new user", async () => {
-  const user = await addUser(testUserName, testPassword);
+  const user = await addUser({ name, password });
   expect(user).toBeInstanceOf(User);
 });
 
 test("User can be created without password", async () => {
-  const user = await addUser(testUserName2);
+  const user = await addUser({ name: secondName });
   expect(user).toBeInstanceOf(User);
 });
 
 test("User without password can not be authenticated", async () => {
   const [, user] = await User.find();
-  const passwordMatch = await verifyPassword(user!.name, testPassword);
+  const passwordMatch = await verifyPassword(user!.name, password);
   expect(passwordMatch).toBeUndefined();
 });
 
@@ -53,21 +53,21 @@ test("Password can be changed", async () => {
   const [user] = await User.find();
   const newPassword = "newPassword";
   await changePassword(user!.name, newPassword);
-  const oldPasswordMatch = await verifyPassword(user!.name, testPassword);
+  const oldPasswordMatch = await verifyPassword(user!.name, password);
   const newPasswordMatch = await verifyPassword(user!.name, newPassword);
   expect(oldPasswordMatch).toBeUndefined();
   expect(newPasswordMatch).toBeInstanceOf(User);
 });
 
 test("User can by found by id or name", async () => {
-  const userByName = await getUser(testUserName);
+  const userByName = await getUser(name);
   const userById = await getUser(1);
   expect(userByName).toBe(userById);
 });
 
 test("Username must be unique", async () => {
   const testFn = async (): Promise<void> => {
-    await addUser(testUserName, testPassword);
+    await addUser({ name, password });
   };
   return expect(testFn).rejects.toThrow(
     "SQLITE_CONSTRAINT: UNIQUE constraint failed: user.name",

@@ -19,5 +19,5 @@ test("Description", async () => {
   const testFn = async (): Promise<void> => {
     await addRuntimeResource({});
   };
-  await expect(testFn).rejects.toThrow("aaaa");
+  await expect(testFn).rejects.toThrow();
 });

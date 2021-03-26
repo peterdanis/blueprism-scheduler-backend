@@ -10,10 +10,10 @@ let userCache: User[] | undefined;
 const generateHash = (string: string): string =>
   createHash("sha256").update(string).digest("base64");
 
-export const addUser = async (
-  name: string,
-  password?: string,
-): Promise<User> => {
+export const addUser = async ({
+  name,
+  password,
+}: Partial<User>): Promise<User> => {
   userCache = undefined;
   const user = User.create({ name });
   if (password) {

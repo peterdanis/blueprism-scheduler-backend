@@ -13,10 +13,16 @@ jest.mock("../src/entities/Job.ts");
 jest.mock("../src/entities/JobLog.ts");
 jest.mock("../src/entities/RuntimeResource.ts");
 
-const get = (route: string): request.Test => request(app).get(route); // .auth(username, pw);
+const get = (route: string): request.Test =>
+  request(app)
+    .get(route)
+    .auth(dummyUser.name as string, "password");
 
 const post = (route: string, input: Record<string, unknown>): request.Test =>
-  request(app).post(route).send(input); // .auth(username, pw);
+  request(app)
+    .post(route)
+    .send(input)
+    .auth(dummyUser.name as string, "password");
 
 describe("Users route", () => {
   test("can get all users", async () => {
