@@ -24,9 +24,11 @@ export const del = <T>(idName: string, fn: (id: number) => Promise<T>) => {
   };
 };
 
-export const update = (
+export const update = <T>(
   idName: string,
-  fn: (id: number) => Promise<unknown>,
+  getFn: (id: number) => Promise<T>,
+  updateFn: (id: number) => Promise<T>,
+  type: string,
 ) => {
   return async (
     req: Request,
@@ -34,14 +36,20 @@ export const update = (
     next: NextFunction,
   ): Promise<void> => {
     try {
+      // eslint-disable-next-line security/detect-object-injection
       const id = req.params[idName];
+      let result;
       if (id) {
         const parsedId = toInteger(id);
         if (parsedId) {
-          await fn(parsedId);
+          result = await getFn(parsedId);
         }
       }
-      res.status(200).json({});
+      if (!result) {
+        throw new CustomError(`${type} not found`, 404);
+      }
+      const updatedResult = await updateFn(Object.assign(result, req.body));
+      res.status(200).json(updatedResult);
     } catch (error) {
       next(error);
     }
