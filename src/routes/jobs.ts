@@ -1,10 +1,10 @@
-import { addJob, getJobs } from "../controllers/job";
+import { addJob, getJobs, stopJob } from "../controllers/job";
 import CustomError from "../utils/customError";
 import { getMany } from "./shared";
 import { getSchedule } from "../controllers/schedule";
 import Job from "../entities/Job";
 import { Router } from "express";
-import toNumber from "../utils/toInteger";
+import toInteger from "../utils/toInteger";
 import User from "../entities/User";
 
 const router = Router();
@@ -22,7 +22,7 @@ router.post("/", async (req, res, next) => {
         422,
       );
     }
-    const parsedScheduleId = toNumber(scheduleId);
+    const parsedScheduleId = toInteger(scheduleId);
     const schedule = await getSchedule(
       (parsedScheduleId || scheduleName) as number | string,
     );
@@ -40,6 +40,27 @@ router.post("/", async (req, res, next) => {
     }
     const job = await addJob(schedule, `userId:${user.id}, name:${user.name}`);
     res.status(201).json(job);
+  } catch (error) {
+    next(error);
+  }
+});
+
+// Cancel queued job
+router.delete("/:jobId", async (req, res, next) => {
+  try {
+    let user: Partial<User> = { id: 0, name: "unknown" };
+    const { hardStop } = req.body;
+    const { jobId } = req.params;
+    if (req.user) {
+      user = req.user;
+    }
+    const parsedId = toInteger(jobId);
+    if (parsedId) {
+      await stopJob(parsedId, user, hardStop);
+      res.status(200).json({});
+    } else {
+      throw new CustomError("$Job not found", 404);
+    }
   } catch (error) {
     next(error);
   }

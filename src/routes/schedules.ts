@@ -5,10 +5,7 @@ import {
   updateSchedule,
 } from "../controllers/schedule";
 import { create, getMany, getOne, update } from "./shared";
-import CustomError from "../utils/customError";
 import { Router } from "express";
-import Schedule from "../entities/Schedule";
-import toInteger from "../utils/toInteger";
 
 const router = Router();
 

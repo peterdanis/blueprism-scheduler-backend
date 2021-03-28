@@ -26,8 +26,8 @@ export const del = <T>(idName: string, fn: (id: number) => Promise<T>) => {
 
 export const update = <T>(
   idName: string,
-  getFn: (id: number) => Promise<T>,
-  updateFn: (id: number) => Promise<T>,
+  getFn: (id: number) => Promise<T | undefined>,
+  updateFn: (entity: T) => Promise<T>,
   type: string,
 ) => {
   return async (
@@ -38,7 +38,7 @@ export const update = <T>(
     try {
       // eslint-disable-next-line security/detect-object-injection
       const id = req.params[idName];
-      let result;
+      let result: T | undefined;
       if (id) {
         const parsedId = toInteger(id);
         if (parsedId) {
@@ -58,7 +58,7 @@ export const update = <T>(
 
 export const getOne = <T>(
   idName: string,
-  fn: (id: number) => Promise<T>,
+  fn: (id: number) => Promise<T | undefined>,
   type: string,
 ) => {
   return async (
@@ -69,15 +69,16 @@ export const getOne = <T>(
     try {
       // eslint-disable-next-line security/detect-object-injection
       const id = req.params[idName];
-      let result: T;
+      let result: T | undefined;
       if (id) {
         const parsedId = toInteger(id);
         if (parsedId) {
           result = await fn(parsedId);
-          res.status(200).json(result);
-        } else {
+        }
+        if (!result) {
           throw new CustomError(`${type} not found`, 404);
         }
+        res.status(200).json(result);
       }
     } catch (error) {
       next(error);

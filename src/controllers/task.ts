@@ -41,7 +41,8 @@ export const addTask = async (taskLikeObject: Partial<Task>): Promise<Task> => {
   return task;
 };
 
-export const deleteTask = async (task: Task): Promise<Task> => {
+export const deleteTask = async (id: number): Promise<Task | undefined> => {
   clearCache();
-  return task.remove();
+  const task = await Task.findOne(id);
+  return task?.remove();
 };

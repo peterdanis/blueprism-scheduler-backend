@@ -49,7 +49,9 @@ export const updateSchedule = async (schedule: Schedule): Promise<Schedule> => {
   clearScheduleCache();
   await schedule.save();
   const scheduleRef = getScheduleRef(schedule.id);
-  scheduleRef?.cancel();
+  if (scheduleRef) {
+    scheduleRef.cancel();
+  }
   registerSchedule(schedule);
   return schedule;
 };

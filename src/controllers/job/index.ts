@@ -5,6 +5,7 @@ import log from "../../utils/logger";
 import retry from "../../utils/retry";
 import Schedule from "../../entities/Schedule";
 import { transferJob } from "../jobLog";
+import User from "../../entities/User";
 
 let checking = false;
 let firstRun = true;
@@ -78,6 +79,9 @@ export const addJob = async (
   return retry(() => job.save());
 };
 
+/**
+ * Returns all jobs, or selection of jobs based on search criteria.
+ */
 export const getJobs = async (
   condition?: Partial<Job> | Partial<Job>[],
 ): Promise<Job[]> => {
@@ -85,6 +89,32 @@ export const getJobs = async (
     return Job.find({ where: condition });
   }
   return Job.find();
+};
+
+/**
+ * Transfers the job to jobLog if its not running or tries to hard/soft stop the job
+ */
+export const stopJob = async (
+  id: number,
+  user: Partial<User>,
+  hardStop?: boolean,
+): Promise<void> => {
+  const jobs = await getJobs();
+  const [job] = jobs.filter((_job) => _job.id === id);
+  if (job && job.status === "waiting") {
+    job.status = "canceled";
+    await transferJob(job, `Canceled by userId:${user.id}, name:${user.name}`);
+  }
+  if (job && job.status === "running") {
+    const [jobRef] = runningJobRef.filter(
+      (_jobRef) => _jobRef.job.id === job.id,
+    );
+    if (hardStop) {
+      jobRef?.emit("jobHardStop", user);
+    } else {
+      jobRef?.emit("jobSoftStop", user);
+    }
+  }
 };
 
 /**

@@ -2,8 +2,9 @@ import {
   addRuntimeResource,
   getRuntimeResource,
   getRuntimeResources,
+  updateRuntimeResource,
 } from "../controllers/runtimeResource";
-import { create, getMany, getOne } from "./shared";
+import { create, getMany, getOne, update } from "./shared";
 import { Router } from "express";
 
 const router = Router();
@@ -18,6 +19,17 @@ router.post("/", create(addRuntimeResource, "Runtime resource"));
 router.get(
   "/:runtimeResourceId",
   getOne("runtimeResourceId", getRuntimeResource, "Runtime resource"),
+);
+
+// Update runtime resource
+router.patch(
+  "/:runtimeResourceId",
+  update(
+    "runtimeResourceId",
+    getRuntimeResource,
+    updateRuntimeResource,
+    "Runtime resource",
+  ),
 );
 
 export default router;
