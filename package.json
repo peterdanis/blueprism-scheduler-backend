@@ -7,7 +7,7 @@
     "node": ">=12.0.0"
   },
   "scripts": {
-    "build": "pkg . --output ./build/Blue_Prism_scheduler_server.exe && npm run copy-assets",
+    "build": "pkg . --output ./build/Blue_Prism_scheduler_server.exe --targets node12-win-x64 && npm run copy-assets",
     "copy-assets": "copy .\\node_modules\\bcrypt\\lib\\binding\\napi-v3\\bcrypt_lib.node .\\build\\ && copy .\\assets\\*.* .\\build\\ && copy .\\sample.env .\\build\\sample.env && ren .\\build\\WinSW.NET4.exe Blue_Prism_scheduler_installer.exe",
     "debug": "set DEBUG=* & npm dev",
     "dev": "nodemon --watch .env --watch src ./src/index.ts",
