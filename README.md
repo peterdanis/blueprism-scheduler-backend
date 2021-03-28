@@ -2,6 +2,8 @@
 
 Node.js based alternative to Blue Prism's built-in scheduler.
 
+# The project is still "work in progress" 🚧
+
 ## Overview
 
 Project consists of 3 parts:
@@ -21,10 +23,6 @@ Scheduler sends instruction which process to run and when via HTTP/HTTPS to API 
 
 ## Features
 
-# The project is still "work in progress" 🚧
-
-### Must have
-
 - [x] user authentication with username and password
 - [x] store data in separate SQL database
 - [x] separate queue for each runtime resource
@@ -39,9 +37,6 @@ Scheduler sends instruction which process to run and when via HTTP/HTTPS to API 
 - [x] run from executable on Windows (via https://github.com/vercel/pkg)
 - [x] register as service on Windows (via https://github.com/winsw/winsw)
 - [x] handle short network or SQL server outages
-
-### Nice to have
-
 - [x] view-only user accounts
 - [ ] user authentication against domain
 - [x] reusable tasks (each task can be part of multiple schedules)
@@ -54,15 +49,30 @@ Scheduler sends instruction which process to run and when via HTTP/HTTPS to API 
 - [ ] drilldown job to steps, to see status of each step
 - [ ] timezone support
 - [ ] maintenance mode
-
-### Stretch goal
-
 - [ ] convert tasks from Blueprism scheduler
 - [ ] define multiple runtime resources per schedule - run job on whichever runtime resource will become free first
 - [ ] link job/steps to session log in Blueprism database
 
-<br/>
-<br/>
+---
+
+## Installation
+
+1. download latest version from [https://github.com/peterdanis/blueprism-scheduler-backend/releases/latest](https://github.com/peterdanis/blueprism-scheduler-backend/releases/latest)
+2. (optional) generate self-signed HTTPS certificate, using `generate_selfsigned_certificate.bat`
+3. rename `sample.env` file to `.env`
+4. open `.env` file with any text editor and update settings
+5. install it as Windows service, using `install.bat`
+6. connect via `http://yourHostname:port`, or directly from same machine via `http://localhost:3000` (or `https://localhost:3000` if you use HTTPS and you did not change the default port)
+7. if page is not loading, check logs in `logs` folder for potential errors
+
+## Updating
+
+1. stop `Blue Prism scheduler` service (e.g. via: Win+R key combination, type in `services.msc`, hit Enter, find it in the list)
+2. go to folder, where you installed this project
+3. delete `webapp` folder
+4. download latest version from [https://github.com/peterdanis/blueprism-scheduler-backend/releases/latest](https://github.com/peterdanis/blueprism-scheduler-backend/releases/latest) and overwrite all files
+5. start `Blue Prism scheduler` service
+6. check logs in `logs` folder for potential errors
 
 ---
 
