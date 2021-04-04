@@ -45,6 +45,19 @@ export const registerSchedule = (schedule: Schedule): void => {
   );
 };
 
+export const deleteSchedule = async (
+  id: number,
+): Promise<Schedule | undefined> => {
+  const schedule = await getSchedule(id);
+  const scheduleRef = getScheduleRef(id);
+  if (scheduleRef) {
+    scheduleRef.cancel();
+  }
+  await schedule?.remove();
+  clearScheduleCache();
+  return schedule;
+};
+
 export const updateSchedule = async (schedule: Schedule): Promise<Schedule> => {
   clearScheduleCache();
   await schedule.save();

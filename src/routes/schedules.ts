@@ -1,10 +1,11 @@
 import {
   addSchedule,
+  deleteSchedule,
   getSchedule,
   getSchedules,
   updateSchedule,
 } from "../controllers/schedule";
-import { create, getMany, getOne, update } from "./shared";
+import { create, del, getMany, getOne, update } from "./shared";
 import { Router } from "express";
 
 const router = Router();
@@ -23,5 +24,7 @@ router.patch(
   "/:scheduleId",
   update("scheduleId", getSchedule, updateSchedule, "Schedule"),
 );
+
+router.delete("/:scheduleId", del("scheduleId", deleteSchedule));
 
 export default router;
