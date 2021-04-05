@@ -50,6 +50,7 @@ export default class Schedule extends Base {
   waitTime!: number;
 
   @OneToMany(() => ScheduleTask, (scheduleTask) => scheduleTask.schedule, {
+    cascade: true,
     eager: true,
   })
   scheduleTask!: ScheduleTask[];
