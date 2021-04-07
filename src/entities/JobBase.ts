@@ -1,6 +1,6 @@
 import { Column, UpdateDateColumn } from "typeorm";
 import Base from "./Base";
-import { defaultPriority } from "../utils/getSetting";
+import { defaultPriority } from "../controllers/setting";
 
 type JobStatus =
   | "canceled" // if skipped or canceled from user side

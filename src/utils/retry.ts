@@ -1,5 +1,5 @@
 import asyncRetry, { Options } from "async-retry";
-import { maxRetryTime } from "./getSetting";
+import { maxRetryTime } from "../controllers/setting";
 
 const options: Options = {
   factor: 1.5,

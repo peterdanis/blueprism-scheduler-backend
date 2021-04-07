@@ -1,6 +1,6 @@
 import { Column, Entity, ManyToOne, OneToMany } from "typeorm";
 import Base from "./Base";
-import { defaultPriority } from "../utils/getSetting";
+import { defaultPriority } from "../controllers/setting";
 import Job from "./Job";
 import RuntimeResource from "./RuntimeResource";
 import ScheduleTask from "./ScheduleTask";
@@ -39,6 +39,9 @@ export default class Schedule extends Base {
 
   @Column({ default: 86400000 }) // The default 86400000ms equals to 1d
   softTimeout!: number;
+
+  @Column({ nullable: true })
+  timezone?: string;
 
   @Column()
   validFrom!: Date;

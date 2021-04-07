@@ -4,7 +4,7 @@ import { getHeader, getUrl } from "../../utils/getUrlAndHeader";
 import Job from "../../entities/Job";
 import logger from "../../utils/logger";
 import { parentPort } from "worker_threads";
-import { recheckDelay } from "../../utils/getSetting";
+import { recheckDelay } from "../setting";
 import retry from "../../utils/retry";
 import ScheduleTask from "../../entities/ScheduleTask";
 import sleep from "../../utils/sleep";

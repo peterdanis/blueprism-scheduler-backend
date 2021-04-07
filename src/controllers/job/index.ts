@@ -1,5 +1,5 @@
 import { JobRef, run } from "./run";
-import { checkInterval } from "../../utils/getSetting";
+import { checkInterval } from "../setting";
 import Job from "../../entities/Job";
 import log from "../../utils/logger";
 import retry from "../../utils/retry";
