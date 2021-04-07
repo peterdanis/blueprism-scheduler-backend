@@ -1,9 +1,9 @@
-import { Connection, createConnection } from "typeorm";
 import {
   addSchedule,
   getScheduleRef,
   registerExistingSchedules,
 } from "../../src/controllers/schedule";
+import { Connection, createConnection } from "typeorm";
 import config from "../testUtils/testConnectionConfig";
 import { install } from "@sinonjs/fake-timers";
 import loadDummies from "../testUtils/loadDummies";
@@ -65,5 +65,32 @@ describe("Scheduler", () => {
     expect(schedule?.nextInvocation().toISOString()).toBe(
       "9999-01-01T00:01:00.000Z",
     );
+  });
+
+  test("honors timezones", async () => {
+    const [runtimeResource] = await getRuntimeResources();
+    const { id } = await addSchedule({
+      name: "Test 5",
+      rule: "5 16 * * *",
+      runtimeResource,
+      timezone: "UTC",
+      validFrom: new Date("9999-01-01"),
+    });
+    const hourOfUtcSchedule = getScheduleRef(id)
+      ?.nextInvocation()
+      .getUTCHours() as number;
+
+    const { id: id2 } = await addSchedule({
+      name: "Test 6",
+      rule: "5 16 * * *",
+      runtimeResource,
+      timezone: "Europe/Bratislava",
+      validFrom: new Date("9999-01-01"),
+    });
+    const hourOfOtherZoneSchedule = getScheduleRef(id2)
+      ?.nextInvocation()
+      .getUTCHours() as number;
+    // The expected time difference can possibly change in future
+    expect(hourOfUtcSchedule - hourOfOtherZoneSchedule).toBe(1);
   });
 });

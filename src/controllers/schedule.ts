@@ -35,10 +35,10 @@ export const getSchedule = async (
 
 // TODO: check start and end date/time before adding to jobs
 export const registerSchedule = (schedule: Schedule): void => {
-  const { id, rule, validFrom, validUntil } = schedule;
+  const { id, rule, timezone, validFrom, validUntil } = schedule;
   scheduleJob(
     id.toString(),
-    { end: validUntil, rule, start: validFrom },
+    { end: validUntil, rule, start: validFrom, tz: timezone },
     async (): Promise<Job> => {
       return addJob(schedule, "scheduler");
     },

@@ -61,15 +61,17 @@
     },
     {
       "name": "Test schedule 2",
-      "rule": "*/2 * * * *",
+      "rule": "0 16 * * *",
       "runtimeResource": "vm2",
+      "timezone": "UTC",
       "validFrom": "now"
     },
     {
       "name": "Test schedule 3",
       "priority": 40,
-      "rule": "*/2 * * * *",
+      "rule": "0 16 * * *",
       "runtimeResource": "vm2",
+      "timezone": "UTC",
       "validFrom": "now"
     }
   ],
