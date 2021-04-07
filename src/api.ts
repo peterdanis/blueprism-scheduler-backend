@@ -6,6 +6,7 @@ import log from "./utils/logger";
 import path from "path";
 import runtimeResourcesRouter from "./routes/runtimeResources";
 import schedulesRouter from "./routes/schedules";
+import settingsRouter from "./routes/settings";
 import setupAuth from "./utils/auth";
 import tasksRouter from "./routes/tasks";
 import usersRouter from "./routes/users";
@@ -46,6 +47,7 @@ app.use("/api/jobLogs", jobLogsRouter);
 app.use("/api/jobs", jobsRouter);
 app.use("/api/runtimeResources", runtimeResourcesRouter);
 app.use("/api/schedules", schedulesRouter);
+app.use("/api/settings", settingsRouter);
 app.use("/api/tasks", tasksRouter);
 app.use("/api/users", usersRouter);
 
