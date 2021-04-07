@@ -1,10 +1,10 @@
 import {MigrationInterface, QueryRunner} from "typeorm";
 
-export class migration1617805454432 implements MigrationInterface {
-    name = 'migration1617805454432'
+export class migration1617822062132 implements MigrationInterface {
+    name = 'migration1617822062132'
 
     public async up(queryRunner: QueryRunner): Promise<void> {
-        await queryRunner.query(`CREATE TABLE "setting" ("id" integer PRIMARY KEY AUTOINCREMENT NOT NULL, "key" varchar NOT NULL, "value" varchar NOT NULL)`);
+        await queryRunner.query(`CREATE TABLE "setting" ("id" integer PRIMARY KEY AUTOINCREMENT NOT NULL, "key" varchar NOT NULL, "value" varchar NOT NULL, CONSTRAINT "UQ_1c4c95d773004250c157a744d6e" UNIQUE ("key"))`);
         await queryRunner.query(`CREATE TABLE "task" ("id" integer PRIMARY KEY AUTOINCREMENT NOT NULL, "inputs" text, "hardTimeout" integer NOT NULL DEFAULT (86400000), "name" varchar NOT NULL, "process" varchar NOT NULL, "softTimeout" integer NOT NULL DEFAULT (86400000), CONSTRAINT "UQ_20f1f21d6853d9d20d501636ebd" UNIQUE ("name"))`);
         await queryRunner.query(`CREATE TABLE "schedule_task" ("id" integer PRIMARY KEY AUTOINCREMENT NOT NULL, "abortEarly" boolean NOT NULL DEFAULT (1), "delayAfter" integer NOT NULL DEFAULT (0), "onError" text, "step" integer NOT NULL, "scheduleId" integer NOT NULL, "taskId" integer NOT NULL, CONSTRAINT "step_scheduleId" UNIQUE ("step", "scheduleId"))`);
         await queryRunner.query(`CREATE TABLE "schedule" ("id" integer PRIMARY KEY AUTOINCREMENT NOT NULL, "force" boolean NOT NULL DEFAULT (0), "name" varchar NOT NULL, "hardForceTime" integer NOT NULL DEFAULT (1800000), "hardTimeout" integer NOT NULL DEFAULT (86400000), "onError" text, "priority" integer NOT NULL DEFAULT (50), "rule" varchar NOT NULL, "softForceTime" integer NOT NULL DEFAULT (900000), "softTimeout" integer NOT NULL DEFAULT (86400000), "timezone" varchar, "validFrom" datetime NOT NULL, "validUntil" datetime NOT NULL DEFAULT ('9999-12-31T00:00:00.000Z'), "waitTime" integer NOT NULL DEFAULT (86400000), "runtimeResourceId" integer NOT NULL, CONSTRAINT "UQ_15663a2014348b782e7058542e1" UNIQUE ("name"))`);

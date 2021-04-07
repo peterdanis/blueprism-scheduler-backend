@@ -9,10 +9,21 @@ export const defaultTimezone = (() =>
 export const preferedTimezone = (() =>
   Intl.DateTimeFormat().resolvedOptions().timeZone)();
 
+let settingsCache: Setting[] | undefined;
+
 export const getSettings = async (): Promise<Setting[]> => {
-  return Setting.find();
+  if (settingsCache) {
+    return settingsCache;
+  }
+  settingsCache = await Setting.find();
+  return settingsCache;
 };
 
-// const loadDefaultSettingsToDb = () => {
-//   const settings = await getSettings();
-// };
+const loadDefaultSettingsToDb = async () => {
+  const settings = await getSettings();
+  const settingsKeys = settings.map((setting) => setting.key);
+  if (!settingsKeys.includes("defaultPriority")) {
+    const setting = Setting.create();
+    setting.key = "defaultPriority";
+  }
+};

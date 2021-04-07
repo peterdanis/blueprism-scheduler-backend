@@ -3,7 +3,7 @@ import Base from "./Base";
 
 @Entity()
 export default class Setting extends Base {
-  @Column()
+  @Column({ unique: true })
   key!: string;
 
   @Column()
