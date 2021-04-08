@@ -26,6 +26,7 @@ export default class ScheduleTask extends Base {
 
   @ManyToOne(() => Schedule, (schedule) => schedule.scheduleTask, {
     nullable: false,
+    orphanedRowAction: "delete",
   })
   schedule!: Schedule;
 
