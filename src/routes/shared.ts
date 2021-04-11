@@ -19,6 +19,20 @@ export const del = <T>(idName: string, fn: (id: number) => Promise<T>) => {
       }
       res.status(200).json({});
     } catch (error) {
+      const msg: string = error.message;
+      if (
+        /The DELETE statement conflicted with the REFERENCE constraint/.test(
+          msg,
+        )
+      ) {
+        next(
+          new CustomError(
+            "Can not delete, entity is probably still used elsewhere, or contains other entities.",
+            422,
+          ),
+        );
+        return;
+      }
       next(error);
     }
   };
