@@ -16,7 +16,7 @@ router.get("/", getMany(getJobs as () => Promise<Job[]>, undefined));
 router.post("/", async (req, res, next) => {
   try {
     const { scheduleId, scheduleName } = req.body;
-    if (typeof scheduleId !== "string" && typeof scheduleName !== "string") {
+    if (scheduleId && scheduleName) {
       throw new CustomError(
         "Job can not be started, scheduleId nor scheduleName parameter is defined",
         422,
