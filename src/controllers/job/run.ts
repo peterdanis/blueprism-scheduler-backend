@@ -207,12 +207,6 @@ export const run = (_job: Job): JobRef => {
       log.info("Message from worker", { value });
 
       switch (true) {
-        case completed:
-          await onStepCompleted("finished");
-          break;
-        case stopped:
-          await onStepCompleted("stopped");
-          break;
         case failed:
           await onTaskError(new Error("Process failed"));
           break;
@@ -221,6 +215,12 @@ export const run = (_job: Job): JobRef => {
           break;
         case softTimeoutReached:
           await stepSoftStop();
+          break;
+        case completed:
+          await onStepCompleted("finished");
+          break;
+        case stopped:
+          await onStepCompleted("stopped");
           break;
         case !!sessionId:
           job.subStep++;

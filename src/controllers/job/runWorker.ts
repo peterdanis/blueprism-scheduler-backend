@@ -57,6 +57,14 @@ const messageHandler = async (_job: Job): Promise<void> => {
   const { step, subStep } = job;
   const { delayAfter, task } = getCurrentTask(job) as ScheduleTask;
 
+  const taskHardStopTimer = setTimeout(() => {
+    parentPort?.postMessage({ hardTimeoutReached: true });
+  }, task.hardTimeout);
+
+  const taskSoftStopTimer = setTimeout(() => {
+    parentPort?.postMessage({ softTimeoutReached: true });
+  }, task.softTimeout);
+
   // Reset runtime resource before very first step
   if (step === 1 && subStep === 1) {
     log.info("Reset runtime resource");
@@ -77,6 +85,9 @@ const messageHandler = async (_job: Job): Promise<void> => {
   log.info("Check process status", { sessionId: job.sessionId });
   const status = await checkStatus(job);
 
+  clearTimeout(taskHardStopTimer);
+  clearTimeout(taskSoftStopTimer);
+
   const message: WorkerMessage = {};
   switch (status) {
     case "Completed":
@@ -96,12 +107,10 @@ const messageHandler = async (_job: Job): Promise<void> => {
   }
   await sleep(delayAfter);
 
-  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-  parentPort!.postMessage(message);
+  parentPort?.postMessage(message);
 };
 
-// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-parentPort!.on("message", messageHandler);
+parentPort?.on("message", messageHandler);
 
 // Rethrow to be catched by worker.on("error") handler
 process.on("unhandledRejection", (error: AxiosError) => {
