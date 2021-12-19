@@ -1,0 +1,72 @@
+### File used for vscode-rest extension (https://marketplace.visualstudio.com/items?itemName=humao.rest-client)
+
+@hostname = localhost
+@port = 3000
+@username = rpa
+@password = p@ssword1#
+@host = {{hostname}}:{{port}}
+@session = fcb41d82-8e04-4c35-b624-850126d92f2d
+
+
+### Missing auth example
+
+GET https://{{host}}/missingauth
+
+### 404 example
+
+GET https://{{host}}/404test
+authorization: Basic {{username}} {{password}}
+
+### Link to swagger
+
+GET https://{{host}}/api-docs/
+authorization: Basic {{username}} {{password}}
+
+### Link to API spec JSON file (only in development)
+
+GET https://{{host}}/api-spec/
+authorization: Basic {{username}} {{password}}
+
+### Get API server version
+
+GET https://{{host}}/version
+authorization: Basic {{username}} {{password}}
+
+
+### Start test process with one input parameter
+
+POST https://{{host}}/processes http/1.1
+authorization: Basic {{username}} {{password}}
+content-type: application/json
+
+{
+  "process": "Test process",
+  "inputs": [
+    {
+      "@name": "Time to run",
+      "@type": "text",
+      "@value": "20"
+    }
+  ]
+}
+
+###
+
+GET https://{{host}}/processes/{{session}}
+authorization: Basic {{username}} {{password}}
+
+###
+
+POST https://{{host}}/processes/{{session}}/stop
+authorization: Basic {{username}} {{password}}
+
+### Example with invalid session ID
+
+POST https://{{host}}/processes/badid/stop
+authorization: Basic {{username}} {{password}}
+
+###
+
+POST https://{{host}}/reset
+authorization: Basic {{username}} {{password}}
+
