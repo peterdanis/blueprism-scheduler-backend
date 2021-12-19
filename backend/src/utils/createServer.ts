@@ -5,6 +5,16 @@ import http from "http";
 import https from "https";
 import log from "./logger";
 
+process.on("uncaughtException", (error: Error) => {
+  log.error(`Error: ${error.message}`);
+  process.exit(1);
+});
+
+process.on("unhandledRejection", (error: Error) => {
+  log.error(`Error: ${error.message}`);
+  process.exit(1);
+});
+
 export default (app: Application): http.Server => {
   let server;
 
@@ -21,7 +31,7 @@ export default (app: Application): http.Server => {
         pfx: fs.readFileSync(certFile), // eslint-disable-line security/detect-non-literal-fs-filename
       };
       server = https.createServer(options, app);
-    } catch (error) {
+    } catch (error: any) {
       if (error.message === "mac verify failure") {
         log.error(
           "Error: Please check whether certificate password stored in .env (or env variable) file is correct",
@@ -30,10 +40,8 @@ export default (app: Application): http.Server => {
         log.error(
           `Error: ${error.message}. Generate self signed certificate, set correct cert path in .env file (or env variable) or switch to non-secure HTTP instead of HTTPS in .env file (or env variable).`,
         );
-      } else {
-        log.error(`Error: ${error.message}`);
       }
-      process.exit(1);
+      throw error;
     }
   } else {
     server = http.createServer(app);

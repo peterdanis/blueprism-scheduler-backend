@@ -86,7 +86,7 @@ export const getJobs = async (
   condition?: Partial<Job> | Partial<Job>[],
 ): Promise<Job[]> => {
   if (condition) {
-    return Job.find({ where: condition });
+    return Job.find<Job>({ where: condition });
   }
   return Job.find();
 };
@@ -178,7 +178,7 @@ export const startIfAvailable = async (): Promise<void> => {
         }
       }
     }
-  } catch (error) {
+  } catch (error: any) {
     log.error(error.message, { error: error.response.data });
   } finally {
     firstRun = false;

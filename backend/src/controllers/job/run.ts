@@ -90,7 +90,7 @@ export const run = (_job: Job): JobRef => {
       } else {
         throw new Error("sessionId is not defined, can't stop this step");
       }
-    } catch (error) {
+    } catch (error: any) {
       log.error(error.message, { error: error.response.data });
       throw error;
     }
@@ -100,7 +100,7 @@ export const run = (_job: Job): JobRef => {
     stopping = true;
     try {
       await worker.terminate();
-    } catch (error) {
+    } catch (error: any) {
       log.error(error.message);
     }
 
@@ -125,7 +125,7 @@ export const run = (_job: Job): JobRef => {
     try {
       log.info("Post reset");
       await retry(() => axios.post(getUrl(job, "reset"), {}, getHeader(job)));
-    } catch (error) {
+    } catch (error: any) {
       log.error(error.message, { error });
     }
 

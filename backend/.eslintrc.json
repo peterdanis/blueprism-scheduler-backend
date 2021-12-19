@@ -6,8 +6,7 @@
     "plugin:jest/recommended",
     "plugin:prettier/recommended",
     "plugin:promise/recommended",
-    "plugin:security/recommended",
-    "prettier/@typescript-eslint"
+    "plugin:security/recommended"
   ],
   "parserOptions": { "project": "./tsconfig.json" },
   "plugins": ["@typescript-eslint", "prettier", "security"],

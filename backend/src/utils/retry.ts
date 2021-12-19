@@ -20,14 +20,14 @@ const retry = async <T>(fn: () => Promise<T>): Promise<T> => {
   return asyncRetry(async (bail) => {
     try {
       return await fn();
-    } catch (error) {
+    } catch (error: any) {
       if (
         error.response &&
         error.response.status >= 300 &&
         error.response.status < 500 &&
         error.response.status !== 429
       ) {
-        return (bail(error) as unknown) as T;
+        return bail(error) as unknown as T;
       }
       throw error;
     }

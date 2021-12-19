@@ -18,7 +18,7 @@ export const del = <T>(idName: string, fn: (id: number) => Promise<T>) => {
         }
       }
       res.status(200).json({});
-    } catch (error) {
+    } catch (error: any) {
       const msg: string = error.message;
       if (
         /The DELETE statement conflicted with the REFERENCE constraint/.test(
@@ -135,7 +135,7 @@ export const create = <T>(
     try {
       const result = await fn(req.body);
       res.status(201).json(result);
-    } catch (error) {
+    } catch (error: any) {
       const msg: string = error.message;
       if (/NULL/.test(msg)) {
         next(
