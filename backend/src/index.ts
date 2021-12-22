@@ -38,4 +38,4 @@ server.on("listening", async () => {
 
 server.listen(apiPort);
 
-module.exports = server;
+export default server;
