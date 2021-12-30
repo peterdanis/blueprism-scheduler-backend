@@ -1,11 +1,11 @@
-import { authenticate, initialize, use } from "passport";
 import { getUsers, verifyApiKey, verifyPassword } from "../controllers/user";
 import { BasicStrategy } from "passport-http";
 import { Express } from "express";
 import log from "./logger";
+import passport from "passport";
 import { Strategy } from "passport-http-bearer";
 
-use(
+passport.use(
   new BasicStrategy(async (username, password, done): Promise<void> => {
     try {
       // Allow login if no users exists
@@ -26,7 +26,7 @@ use(
   }),
 );
 
-use(
+passport.use(
   new Strategy(async (token, done): Promise<void> => {
     try {
       const user = await verifyApiKey(token);
@@ -42,8 +42,8 @@ use(
 );
 
 const setup = (app: Express): void => {
-  app.use(initialize());
-  app.use(authenticate(["basic", "bearer"], { session: false }));
+  app.use(passport.initialize());
+  app.use(passport.authenticate(["basic", "bearer"], { session: false }));
 };
 
 export default setup;
