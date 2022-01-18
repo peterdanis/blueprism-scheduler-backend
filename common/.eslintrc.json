@@ -1,0 +1,115 @@
+{
+  "extends": [
+    "airbnb-base",
+    "eslint:recommended",
+    "plugin:@typescript-eslint/recommended",
+    "plugin:jest/recommended",
+    "plugin:prettier/recommended",
+    "plugin:promise/recommended",
+    "plugin:security/recommended"
+  ],
+  "parserOptions": { "project": "./tsconfig.json" },
+  "plugins": ["@typescript-eslint", "prettier", "security"],
+  "rules": {
+    "linebreak-style": "off",
+    "quotes": ["warn", "double"],
+    "no-plusplus": "off",
+    "comma-dangle": [
+      "warn",
+      {
+        "arrays": "always-multiline",
+        "objects": "always-multiline",
+        "imports": "always-multiline",
+        "exports": "always-multiline",
+        "functions": "always-multiline"
+      }
+    ],
+    "no-use-before-define": "off", // see https://github.com/typescript-eslint/typescript-eslint/blob/master/packages/eslint-plugin/docs/rules/no-use-before-define.md#how-to-use
+    "@typescript-eslint/no-use-before-define": ["error"],
+    "@typescript-eslint/no-floating-promises": ["warn"],
+    "@typescript-eslint/explicit-function-return-type": [
+      "warn",
+      {
+        "allowExpressions": true,
+        "allowTypedFunctionExpressions": true
+      }
+    ],
+    "@typescript-eslint/explicit-member-accessibility": [
+      "error",
+      {
+        "accessibility": "no-public"
+      }
+    ],
+    "prettier/prettier": [
+      "warn",
+      {
+        "trailingComma": "all"
+      }
+    ],
+    "sort-keys": [
+      "warn",
+      "asc",
+      {
+        "caseSensitive": false,
+        "natural": true
+      }
+    ],
+    "sort-imports": [
+      "warn",
+      {
+        "ignoreCase": true,
+        "ignoreDeclarationSort": false,
+        "ignoreMemberSort": false,
+        "memberSyntaxSortOrder": ["none", "all", "multiple", "single"]
+      }
+    ],
+    "import/order": [
+      "error",
+      {
+        "groups": [],
+        "newlines-between": "never"
+      }
+    ],
+    "import/no-extraneous-dependencies": "off",
+    "import/extensions": "off",
+    "import/prefer-default-export": "warn",
+    "spaced-comment": [
+      "warn",
+      "always",
+      {
+        "markers": ["/ <reference"]
+      }
+    ]
+  },
+  "settings": {
+    "import/resolver": {
+      "node": {
+        "extensions": [".js", ".jsx", ".ts", ".tsx"]
+      }
+    }
+  },
+  "parser": "@typescript-eslint/parser",
+  "env": {
+    "node": true
+  },
+  "overrides": [
+    {
+      "files": ["./tests/**/*"],
+      "env": {
+        "jest": true
+      },
+      "rules": {
+        "global-require": "off",
+        "@typescript-eslint/ban-ts-comment": "off",
+        "@typescript-eslint/no-non-null-assertion": "off"
+      }
+    }
+  ],
+  "ignorePatterns": [
+    "**/migrations/**/*",
+    "/build/**/*",
+    "/pre-build/**/*",
+    "/src/controller/job/runWorker.js",
+    "**/runWorker.js"
+  ]
+}

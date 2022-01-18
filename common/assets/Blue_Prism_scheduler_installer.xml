@@ -1,0 +1,13 @@
+<service>
+  <id>blueprism-scheduler</id>
+  <name>Blue Prism scheduler</name>
+  <description>Custom scheduler for Blue Prism RPA</description>
+  <startmode>automatic</startmode>
+  <executable>Blue_Prism_scheduler_server.exe</executable>
+  <log mode="roll-by-size">
+    <sizeThreshold>1024</sizeThreshold>
+    <keepFiles>8</keepFiles>
+  </log>
+  <logpath>%BASE%\logs</logpath>
+  <onfailure action="restart" />
+</service>

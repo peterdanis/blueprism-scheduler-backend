@@ -1,0 +1,9 @@
+{
+  "name": "blueprism-scheduler",
+  "workspaces": [
+    "backend",
+    "frontend",
+    "common",
+    "interface"
+  ]
+}
